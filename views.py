@@ -1,0 +1,1 @@
+"""Views for budgets app."""

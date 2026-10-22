@@ -1,0 +1,219 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2809.666 878.3000000000001" width="2809.666" height="878.3000000000001" style="--bg:#1F1F1F;--fg:#CCCCCC;--line:#CCCCCC;--accent:#0078D4;--muted:#CCCCCCCC;--surface:#181818;--border:#CCCCCC;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="Client" data-label="Frontend (Django Templates + HTMX)">
+  <rect x="920.38275" y="40" width="486.1675" height="266.70000000000005" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="920.38275" y="40" width="486.1675" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="932.38275" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Frontend (Django Templates + HTMX)</text>
+</g>
+<g class="subgraph" data-id="API" data-label="REST API Layer (DRF)">
+  <rect x="449.8115000000001" y="354.70000000000005" width="1427.31" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="449.8115000000001" y="354.70000000000005" width="1427.31" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="461.8115000000001" y="368.70000000000005" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">REST API Layer (DRF)</text>
+</g>
+<g class="subgraph" data-id="Core" data-label="Core Services">
+  <rect x="687.1575" y="499.6000000000001" width="1011.0169999999999" height="181.8" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="687.1575" y="499.6000000000001" width="1011.0169999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="699.1575" y="513.6000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Core Services</text>
+</g>
+<g class="subgraph" data-id="AI" data-label="AI Provider Layer">
+  <rect x="967.1260000000001" y="741.4000000000001" width="538.4079999999999" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="967.1260000000001" y="741.4000000000001" width="538.4079999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="979.1260000000001" y="755.4000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">AI Provider Layer</text>
+</g>
+<g class="subgraph" data-id="External" data-label="External Sources">
+  <rect x="40" y="741.4000000000001" width="899.1260000000001" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="741.4000000000001" width="899.1260000000001" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="755.4000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">External Sources</text>
+</g>
+<g class="subgraph" data-id="Data" data-label="Data Layer (PostgreSQL)">
+  <rect x="1533.534" y="735.4000000000001" width="1236.132" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="1533.534" y="735.4000000000001" width="1236.132" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="1545.534" y="749.4000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Data Layer (PostgreSQL)</text>
+</g>
+<polyline class="edge" data-from="Client" data-to="API" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1163.4665,306.70000000000005 1163.4665,354.70000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="API" data-to="Core" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1163.4665,451.6 1163.4665,499.6000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Core" data-to="Data" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1623.7755000000002,681.4000000000001 1623.7755000000002,711.4000000000001 2357.622,711.4000000000001 2357.622,735.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="P" data-to="AB" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="803.4195,665.4000000000001 803.4195000000001,723.4000000000001 846.576,723.4000000000001 846.5759999999999,782.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Q" data-to="External" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1033.796,665.4000000000001 1033.796,723.4000000000001 856.576,723.4000000000001 856.576,741.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="R" data-to="AI" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1218.8958333333333,665.4000000000001 1218.8958333333333,723.4000000000001 1341.8993333333333,723.4000000000001 1341.8993333333333,741.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S" data-to="AI" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1410.3698333333332,665.4000000000001 1410.3698333333332,723.4000000000001 1386.308,723.4000000000001 1386.308,741.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="T" data-to="Data" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1613.7755,665.4000000000001 1613.7755000000002,723.4000000000001 1945.5780000000002,723.4000000000001 1945.5780000000002,735.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="R" data-to="W" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1246.3885,665.4000000000001 1246.3885,723.9000000000001 1386.308,723.9000000000001 1386.308,782.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S" data-to="W" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1437.1215000000002,665.4000000000001 1437.1215000000002,723.9000000000001 1386.308,723.9000000000001 1386.308,782.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="A" data-to="B" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1145.86775,120.9 1145.86775,168.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="B" data-to="C" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1145.86775,205.8 1145.86775,229.8 1166.98625,229.8 1166.98625,253.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="B" data-to="D" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1145.86775,205.8 1145.86775,229.8 1312.51825,229.8 1312.51825,253.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="B" data-to="E" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1145.86775,205.8 1145.86775,229.8 1007.37525,229.8 1007.37525,253.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="F" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1318.44625,120.9 1318.44625,168.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="O" data-to="P" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1246.3885,580.5000000000001 1246.3885,604.5000000000001 803.4195,604.5000000000001 803.4195,628.5000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="O" data-to="Q" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1246.3885,580.5000000000001 1246.3885,604.5000000000001 1033.796,604.5000000000001 1033.796,628.5000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="O" data-to="R" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1246.3885,580.5000000000001 1246.3885,604.5000000000001 1246.3885,604.5000000000001 1246.3885,628.5000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="O" data-to="S" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1246.3885,580.5000000000001 1246.3885,604.5000000000001 1437.1215000000002,604.5000000000001 1437.1215000000002,628.5000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="O" data-to="T" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1246.3885,580.5000000000001 1246.3885,604.5000000000001 1613.7754999999997,604.5000000000001 1613.7754999999997,628.5000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="node" data-id="A" data-label="Search Bar" data-shape="rectangle">
+  <rect x="1090.43625" y="84" width="110.863" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1145.86775" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Search Bar</text>
+</g>
+<g class="node" data-id="B" data-label="Scheme Detail Page" data-shape="rectangle">
+  <rect x="1067.09475" y="168.9" width="157.546" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1145.86775" y="187.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Scheme Detail Page</text>
+</g>
+<g class="node" data-id="C" data-label="Timeline View" data-shape="rectangle">
+  <rect x="1106.36775" y="253.8" width="121.237" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1166.98625" y="272.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Timeline View</text>
+</g>
+<g class="node" data-id="D" data-label="Budget View" data-shape="rectangle">
+  <rect x="1255.60475" y="253.8" width="113.827" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1312.51825" y="272.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Budget View</text>
+</g>
+<g class="node" data-id="E" data-label="Leadership View" data-shape="rectangle">
+  <rect x="936.38275" y="253.8" width="141.985" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1007.37525" y="272.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Leadership View</text>
+</g>
+<g class="node" data-id="F" data-label="Fact-Check Form" data-shape="rectangle">
+  <rect x="1246.3422500000001" y="84" width="144.208" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1318.4462500000002" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Fact-Check Form</text>
+</g>
+<g class="node" data-id="G" data-label="Verdict Display" data-shape="rectangle">
+  <rect x="1252.64075" y="168.9" width="131.611" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1318.44625" y="187.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Verdict Display</text>
+</g>
+<g class="node" data-id="H" data-label="/api/v1/research/" data-shape="rectangle">
+  <rect x="700.2635" y="398.70000000000005" width="141.244" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="770.8855" y="417.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/api/v1/research/</text>
+</g>
+<g class="node" data-id="I" data-label="/api/v1/schemes/" data-shape="rectangle">
+  <rect x="1228.7435" y="398.70000000000005" width="138.28" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1297.8835000000001" y="417.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/api/v1/schemes/</text>
+</g>
+<g class="node" data-id="J" data-label="/api/v1/schemes/{id}/timeline/" data-shape="rectangle">
+  <rect x="465.8115000000001" y="398.70000000000005" width="206.45199999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="569.0375" y="417.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/api/v1/schemes/{id}/timeline/</text>
+</g>
+<g class="node" data-id="K" data-label="/api/v1/schemes/{id}/budgets/" data-shape="rectangle">
+  <rect x="1395.0235" y="398.70000000000005" width="210.89799999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1500.4725" y="417.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/api/v1/schemes/{id}/budgets/</text>
+</g>
+<g class="node" data-id="L" data-label="/api/v1/schemes/{id}/leadership/" data-shape="rectangle">
+  <rect x="1633.9215" y="398.70000000000005" width="227.19999999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1747.5214999999998" y="417.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/api/v1/schemes/{id}/leadership/</text>
+</g>
+<g class="node" data-id="M" data-label="/api/v1/fact-check/" data-shape="rectangle">
+  <rect x="869.5074999999999" y="398.70000000000005" width="146.43099999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="942.723" y="417.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/api/v1/fact-check/</text>
+</g>
+<g class="node" data-id="N" data-label="/api/v1/sources/{id}/" data-shape="rectangle">
+  <rect x="1043.9385" y="398.70000000000005" width="156.805" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1122.341" y="417.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/api/v1/sources/{id}/</text>
+</g>
+<g class="node" data-id="O" data-label="Research Orchestrator" data-shape="rectangle">
+  <rect x="1156.13" y="543.6000000000001" width="180.51699999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1246.3885" y="562.0500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Research Orchestrator</text>
+</g>
+<g class="node" data-id="P" data-label="Source Discovery Service" data-shape="rectangle">
+  <rect x="703.1575" y="628.5000000000001" width="200.524" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="803.4195" y="646.9500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Source Discovery Service</text>
+</g>
+<g class="node" data-id="Q" data-label="Source Fetcher &amp; Extractor" data-shape="rectangle">
+  <rect x="931.6815" y="628.5000000000001" width="204.22899999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1033.796" y="646.9500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Source Fetcher &amp; Extractor</text>
+</g>
+<g class="node" data-id="R" data-label="AI Synthesis Service" data-shape="rectangle">
+  <rect x="1163.9105" y="628.5000000000001" width="164.95600000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1246.3885" y="646.9500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">AI Synthesis Service</text>
+</g>
+<g class="node" data-id="S" data-label="Fact-Check Pipeline" data-shape="rectangle">
+  <rect x="1356.8665" y="628.5000000000001" width="160.51" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1437.1215000000002" y="646.9500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Fact-Check Pipeline</text>
+</g>
+<g class="node" data-id="T" data-label="Cache Manager" data-shape="rectangle">
+  <rect x="1545.3764999999999" y="628.5000000000001" width="136.798" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1613.7754999999997" y="646.9500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Cache Manager</text>
+</g>
+<g class="node" data-id="U" data-label="Gemini Client" data-shape="rectangle">
+  <rect x="1139.7730000000001" y="782.4000000000001" width="115.30900000000001" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1197.4275000000002" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Gemini Client</text>
+</g>
+<g class="node" data-id="V" data-label="Prompt Builder" data-shape="rectangle">
+  <rect x="983.1260000000001" y="782.4000000000001" width="128.647" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1047.4495000000002" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Prompt Builder</text>
+</g>
+<g class="node" data-id="W" data-label="Schema Validator (Pydantic)" data-shape="rectangle">
+  <rect x="1283.082" y="782.4000000000001" width="206.45199999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1386.308" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Schema Validator (Pydantic)</text>
+</g>
+<g class="node" data-id="X" data-label="Government Portals" data-shape="rectangle">
+  <rect x="583.739" y="782.4000000000001" width="158.287" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="662.8825" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Government Portals</text>
+</g>
+<g class="node" data-id="Y" data-label="PIB / Parliament" data-shape="rectangle">
+  <rect x="422.6460000000001" y="782.4000000000001" width="133.09299999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="489.19250000000005" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">PIB / Parliament</text>
+</g>
+<g class="node" data-id="Z" data-label="Budget Documents" data-shape="rectangle">
+  <rect x="243.769" y="782.4000000000001" width="150.877" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="319.2075" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Budget Documents</text>
+</g>
+<g class="node" data-id="AA" data-label="News Organizations" data-shape="rectangle">
+  <rect x="56" y="782.4000000000001" width="159.769" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="135.8845" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">News Organizations</text>
+</g>
+<g class="node" data-id="AB" data-label="Google Search API" data-shape="rectangle">
+  <rect x="770.0260000000001" y="782.4000000000001" width="153.10000000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="846.576" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Google Search API</text>
+</g>
+<g class="node" data-id="AC" data-label="Scheme + Aliases" data-shape="rectangle">
+  <rect x="1715.073" y="782.4000000000001" width="145.69" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1787.9180000000001" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Scheme + Aliases</text>
+</g>
+<g class="node" data-id="AD" data-label="Timeline Events" data-shape="rectangle">
+  <rect x="2229.474" y="782.4000000000001" width="134.575" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2296.7615" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Timeline Events</text>
+</g>
+<g class="node" data-id="AE" data-label="Budget Records" data-shape="rectangle">
+  <rect x="1549.534" y="782.4000000000001" width="137.539" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1618.3035" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Budget Records</text>
+</g>
+<g class="node" data-id="AF" data-label="Leadership / Tenures" data-shape="rectangle">
+  <rect x="2392.049" y="782.4000000000001" width="171.62499999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2477.8615" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Leadership / Tenures</text>
+</g>
+<g class="node" data-id="AG" data-label="Sources + Evidence" data-shape="rectangle">
+  <rect x="2591.674" y="782.4000000000001" width="161.99200000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2672.67" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Sources + Evidence</text>
+</g>
+<g class="node" data-id="AH" data-label="Claims + Verdicts" data-shape="rectangle">
+  <rect x="1888.7630000000001" y="782.4000000000001" width="142.726" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1960.1260000000002" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Claims + Verdicts</text>
+</g>
+<g class="node" data-id="AI2" data-label="Research Cache" data-shape="rectangle">
+  <rect x="2059.489" y="782.4000000000001" width="141.985" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2130.4815" y="800.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Research Cache</text>
+</g>
+</svg>
