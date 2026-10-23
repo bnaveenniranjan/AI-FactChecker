@@ -102,10 +102,7 @@
               <span class="meta-label">Administering Ministry</span>
               <span class="meta-value">Ministry of Agriculture & Farmers Welfare</span>
             </div>
-            <div class="meta-item">
-              <span class="meta-label">Target Beneficiaries</span>
-              <span id="resBeneficiaries" class="meta-value">All Landholding Farmer Families nationwide</span>
-            </div>
+
             <div class="meta-item">
               <span class="meta-label">Funding Pattern</span>
               <span class="meta-value">100% Central Sector (Direct DBT Transfer)</span>
@@ -324,24 +321,24 @@
         <!-- Budget KPI Metrics Cards -->
         <div id="resBudgetKpiGrid" class="budget-kpi-grid">
           <div class="budget-kpi-card">
-            <span class="budget-kpi-label">Total Allocated (BE)</span>
+            <span class="budget-kpi-label">Total Money Planned</span>
             <span id="kpiTotalBe" class="budget-kpi-value">—</span>
-            <span class="budget-kpi-sub">Cumulative Budget Estimates</span>
+            <span class="budget-kpi-sub">Government's approved budget across all years</span>
           </div>
           <div class="budget-kpi-card">
-            <span class="budget-kpi-label">Total Actual Expenditure</span>
+            <span class="budget-kpi-label">Total Money Actually Spent</span>
             <span id="kpiTotalActual" class="budget-kpi-value">—</span>
-            <span class="budget-kpi-sub">Audited Public Outlay</span>
+            <span class="budget-kpi-sub">Officially verified public spending</span>
           </div>
           <div class="budget-kpi-card">
-            <span class="budget-kpi-label">Cumulative Difference</span>
+            <span class="budget-kpi-label">Over or Under Budget (Total)</span>
             <span id="kpiDiffAmount" class="budget-kpi-value">—</span>
-            <span id="kpiDiffSub" class="budget-kpi-sub">Actual vs Budget Estimate</span>
+            <span id="kpiDiffSub" class="budget-kpi-sub">How much was spent vs what was planned</span>
           </div>
           <div class="budget-kpi-card">
-            <span class="budget-kpi-label">Peak Allocation Year</span>
+            <span class="budget-kpi-label">Year With Highest Budget</span>
             <span id="kpiPeakYear" class="budget-kpi-value">—</span>
-            <span id="kpiPeakSub" class="budget-kpi-sub">Highest Outlay FY</span>
+            <span id="kpiPeakSub" class="budget-kpi-sub">Most money approved in one year</span>
           </div>
         </div>
 
@@ -349,13 +346,13 @@
         <div id="resBudgetChartPanel" class="budget-chart-panel">
           <div class="chart-header-actions">
             <div>
-              <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #000000;">Fund Raising &amp; Expenditure Analysis Chart</h4>
-              <p style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted);">Visualizing allocation differences, expenditure variance, and year-over-year adjustments</p>
+              <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #000000;">Budget Spending Analysis Chart</h4>
+              <p style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted);">Compare what was planned vs what was actually spent, year by year</p>
             </div>
             <div class="chart-tabs">
-              <button type="button" class="chart-tab-btn active" data-chart-mode="comparison">BE vs Actuals</button>
-              <button type="button" class="chart-tab-btn" data-chart-mode="difference">Fund Differences (Variance)</button>
-              <button type="button" class="chart-tab-btn" data-chart-mode="yoy">YoY Difference</button>
+              <button type="button" class="chart-tab-btn active" data-chart-mode="comparison">Planned vs Actual Spending</button>
+              <button type="button" class="chart-tab-btn" data-chart-mode="difference">Over / Under Budget</button>
+              <button type="button" class="chart-tab-btn" data-chart-mode="yoy">Year-by-Year Change</button>
             </div>
           </div>
           <div id="resBudgetSvgContainer" class="chart-svg-container">
@@ -368,12 +365,12 @@
             <thead>
               <tr>
                 <th>Financial Year</th>
-                <th>Budget Estimate (BE)</th>
-                <th>Revised Estimate (RE)</th>
-                <th>Actual Expenditure</th>
-                <th>Amount Difference (Actual - BE)</th>
-                <th>YoY Fund Change</th>
-                <th>Verification Status</th>
+                <th>Money Planned (Approved Budget)</th>
+                <th>Budget Updated Mid-Year</th>
+                <th>Money Actually Spent</th>
+                <th>Spending vs Plan (Over/Under)</th>
+                <th>Change from Last Year</th>
+                <th>Data Status</th>
               </tr>
             </thead>
             <tbody id="resBudgetTableBody">

@@ -64,10 +64,13 @@ def _get_candidate_urls(scheme_name: str, query: str) -> List[str]:
     urls = [
         f'https://en.wikipedia.org/wiki/{quote_plus(scheme_name.replace(" ", "_"))}',
         f'https://pib.gov.in/allRel.aspx?query={kw}',
+        f'https://pib.gov.in/search.aspx?reg=3&lang=1&kw={kw}',
         f'https://myscheme.gov.in/schemes',
         f'https://india.gov.in/spotlight/{slug}',
         f'https://vikaspedia.in/social-welfare/{slug}',
         f'https://prsindia.org/policy?term={kw}',
+        f'https://indiabudget.gov.in/doc/eb/stat.pdf',
+        f'https://dea.gov.in/budget',
     ]
     return urls
 
@@ -167,6 +170,9 @@ class ResearchOrchestrator:
         # Step 1: Check cache
         cached = self._get_fresh_cache(cache_key)
         if cached:
+            if job:
+                job.scheme = cached.scheme
+                job.mark_completed(cached.result)
             return cached.result
 
         if job:
@@ -178,9 +184,9 @@ class ResearchOrchestrator:
         candidate_urls = _get_candidate_urls(scheme_name, query)
         log.info('Discovered %d candidate URLs for query: %s', len(candidate_urls), query[:60])
 
-        # Step 3: Fetch sources (skip unreachable ones silently)
+        # Step 3: Fetch sources — higher limit gives Gemini more timeline context
         passages = []
-        for url in candidate_urls[:8]:  # Limit to 8 sources per request
+        for url in candidate_urls[:12]:  # Increased from 8 to 12 for fuller timeline coverage
             content = fetch_url_content(url)
             if content and content.get('text'):
                 passages.append(content)

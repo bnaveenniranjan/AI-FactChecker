@@ -38,6 +38,16 @@ CRITICAL RULES — YOU MUST FOLLOW THESE EXACTLY:
 6. Do not label a claim false merely because no supporting source was found — use "insufficient_evidence" instead.
 7. When sources disagree, include both versions and note the disagreement.
 
+TIMELINE REQUIREMENT — VERY IMPORTANT:
+- Extract EVERY timeline event from the scheme's launch date all the way to the most recent event in the evidence.
+- Do NOT limit to recent years. Include the launch event, every amendment, every budget update, every leadership change, and every eligibility change found in the evidence.
+- List events in chronological order, oldest first.
+- If the evidence mentions any date-linked event, it must appear as a timeline entry.
+
+BUDGET REQUIREMENT:
+- Extract budget records for EVERY financial year mentioned in the evidence — from the first year to the most recent.
+- Do not skip any year. Include years with partial data (mark data_gaps accordingly).
+
 USER QUERY:
 {query}
 
@@ -117,6 +127,7 @@ Produce a JSON object matching this exact structure (omit fields that are null):
 
 Respond with ONLY the JSON object. No markdown code fences, no commentary outside the JSON.
 """
+
 
 
 def build_fact_check_prompt(claim: str, retrieved_passages: List[dict]) -> str:

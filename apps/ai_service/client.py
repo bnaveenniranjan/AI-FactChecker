@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import logging
 import time
+import requests
 from typing import Type, TypeVar
 
 from django.conf import settings
@@ -61,14 +62,15 @@ class GeminiClient:
     """
 
     def __init__(self):
-        self._api_key = getattr(settings, 'GEMINI_API_KEY', '') or ''
-        self._model_name = getattr(settings, 'GEMINI_MODEL', 'gemini-3.8-flash') or 'gemini-3.8-flash'
-        self._client = None
+        # OpenRouter credentials and model
+        self._api_key = getattr(settings, 'OPENROUTER_API_KEY', '') or ''
+        self._model_name = getattr(settings, 'OPENROUTER_MODEL', 'google/gemma-4-31b-it:free') or 'google/gemma-4-31b-it:free'
+        self._client = None  # kept for backward compatibility; not used
 
     def is_configured(self) -> bool:
-        """Check if a Gemini API key is configured and valid."""
+        """Check if an OpenRouter API key is configured and valid."""
         import os
-        key = self._api_key or os.environ.get('GEMINI_API_KEY') or getattr(settings, 'GEMINI_API_KEY', '')
+        key = self._api_key or os.environ.get('OPENROUTER_API_KEY') or getattr(settings, 'OPENROUTER_API_KEY', '')
         return bool(key and str(key).strip())
 
     def set_api_key(self, api_key: str):
@@ -77,72 +79,58 @@ class GeminiClient:
         self._client = None
 
     def _get_client(self):
-        """Lazy-initialise the Gemini SDK client."""
-        import os
-        key = self._api_key or os.environ.get('GEMINI_API_KEY') or getattr(settings, 'GEMINI_API_KEY', '')
-        if not key or not str(key).strip():
-            raise GeminiError(
-                'GEMINI_API_KEY is not configured. '
-                'Set it in your .env file or via settings.'
-            )
-        if self._client is None or self._api_key != key:
-            self._api_key = key
-            try:
-                from google import genai
-                self._client = genai.Client(api_key=self._api_key)
-            except ImportError as exc:
-                raise GeminiError('google-genai package is not installed.') from exc
-        return self._client
+        """Placeholder for compatibility – OpenRouter does not need a client object."""
+        return None
 
     def _call_with_retry(self, prompt: str) -> str:
-        """
-        Call Gemini with bounded exponential backoff on transient errors.
+        """Call OpenRouter with exponential backoff on transient errors.
 
         Returns the raw text response.
-        Raises GeminiRateLimitError if quota is exhausted after retries.
-        Raises GeminiError for unrecoverable errors.
+        Raises GeminiError (used for compatibility) for unrecoverable errors.
         """
-        client = self._get_client()
         backoff = INITIAL_BACKOFF_S
-
+        openrouter_key = getattr(settings, 'OPENROUTER_API_KEY', '') or ''
+        openrouter_endpoint = "https://openrouter.ai/api/v1/chat/completions"
+        if not openrouter_key:
+            raise GeminiError('OPENROUTER_API_KEY is not configured.')
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 log.debug(
-                    'Gemini request: model=%s attempt=%d prompt_len=%d',
+                    'OpenRouter request: model=%s attempt=%d prompt_len=%d',
                     self._model_name,
                     attempt,
                     len(prompt),
                 )
-                response = client.models.generate_content(
-                    model=self._model_name,
-                    contents=prompt,
-                )
-                text = response.text
-                log.debug('Gemini response received: len=%d', len(text) if text else 0)
+                headers = {
+                    "Authorization": f"Bearer {openrouter_key}",
+                    "Content-Type": "application/json",
+                }
+                payload = {
+                    "model": self._model_name,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "reasoning": {"enabled": True},
+                }
+                resp = requests.post(openrouter_endpoint, headers=headers, data=json.dumps(payload), timeout=30)
+                resp.raise_for_status()
+                data = resp.json()
+                text = data['choices'][0]['message']['content']
+                log.debug('OpenRouter response received: len=%d', len(text) if text else 0)
                 return text or ''
-
             except Exception as exc:
                 exc_str = str(exc).lower()
                 is_rate_limit = any(kw in exc_str for kw in ('quota', 'rate', '429', 'resource_exhausted'))
                 is_transient = any(kw in exc_str for kw in ('500', '503', 'timeout', 'unavailable'))
-
-                if is_rate_limit and attempt == MAX_RETRIES:
-                    log.warning('Gemini rate limit exhausted after %d attempts.', MAX_RETRIES)
-                    raise GeminiRateLimitError('Gemini API quota exhausted.') from exc
-
                 if (is_rate_limit or is_transient) and attempt < MAX_RETRIES:
                     log.warning(
-                        'Gemini transient error (attempt %d/%d): %s. Retrying in %.1fs.',
+                        'OpenRouter transient error (attempt %d/%d): %s. Retrying in %.1fs.',
                         attempt, MAX_RETRIES, exc, backoff,
                     )
                     time.sleep(backoff)
                     backoff *= BACKOFF_MULTIPLIER
                     continue
-
-                log.error('Gemini unrecoverable error: %s', exc, exc_info=True)
-                raise GeminiError(f'Gemini API error: {exc}') from exc
-
-        raise GeminiError('Gemini call failed after all retries.')
+                log.error('OpenRouter unrecoverable error: %s', exc, exc_info=True)
+                raise GeminiError(f'OpenRouter API error: {exc}') from exc
+        raise GeminiError('OpenRouter call failed after all retries.')
 
     def _parse_json_response(self, raw: str, schema: Type[T]) -> T:
         """
@@ -234,4 +222,4 @@ class GeminiClient:
 
 
 # Module-level singleton — use this instead of constructing GeminiClient directly
-gemini_client = GeminiClient()
+gemini_client = GeminiClient()  # Alias kept for backward compatibility

@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import logging
 import time
+import json
 
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
+from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -53,7 +55,22 @@ class ResearchView(APIView):
     """
 
     def post(self, request):
-        serializer = ResearchRequestSerializer(data=request.data)
+        # Attempt to parse JSON payload safely, handling potential BOM or malformed data
+        try:
+            data = request.data
+        except Exception as exc:
+            # Fallback: manually load raw body, stripping possible UTF-8 BOM
+            try:
+                raw = request.body.decode('utf-8-sig')
+                data = json.loads(raw)
+            except Exception as exc2:
+                log.error('JSON parse error in research request: %s / %s', exc, exc2)
+                return Response(
+                    {'detail': f'Invalid JSON payload: {exc2}'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        # Validate input using serializer
+        serializer = ResearchRequestSerializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -208,7 +225,7 @@ class SchemeLeadershipView(APIView):
                 continue
 
             min_name = ev.responsible_ministry.name if ev.responsible_ministry else 'Administering Ministry'
-            role = 'Prime Minister' if 'Prime Minister' in (ev.title + leader_name) else ('Union Minister' if 'Minister' in (ev.title + leader_name) else 'Minister In-Charge')
+            role = 'Prime Minister' if 'Prime Minister' in (ev.title + (leader_name or '')) else ('Union Minister' if 'Minister' in (ev.title + (leader_name or '')) else 'Minister In-Charge')
             results.append({
                 'id': idx,
                 'responsibility_type': ev.event_type,
@@ -397,35 +414,21 @@ class GeminiConfigureView(APIView):
         import os
         from django.conf import settings
 
+        # Update both OpenRouter and legacy Gemini env vars for compatibility
         gemini_client.set_api_key(api_key)
         if model_name:
             gemini_client._model_name = model_name
 
-        os.environ['GEMINI_API_KEY'] = api_key
+        os.environ['OPENROUTER_API_KEY'] = api_key
+        os.environ['GEMINI_API_KEY'] = api_key  # keep for backward compatibility
+        setattr(settings, 'OPENROUTER_API_KEY', api_key)
         setattr(settings, 'GEMINI_API_KEY', api_key)
 
-        # Also attempt to persist in .env if available
-        try:
-            env_path = settings.BASE_DIR / '.env'
-            if env_path.exists():
-                lines = env_path.read_text(encoding='utf-8').splitlines()
-                new_lines = []
-                key_updated = False
-                for line in lines:
-                    if line.startswith('GEMINI_API_KEY='):
-                        new_lines.append(f'GEMINI_API_KEY={api_key}')
-                        key_updated = True
-                    else:
-                        new_lines.append(line)
-                if not key_updated:
-                    new_lines.append(f'GEMINI_API_KEY={api_key}')
-                env_path.write_text('\n'.join(new_lines) + '\n', encoding='utf-8')
-        except Exception as e:
-            log.warning('Could not write to .env: %s', e)
+        log.info('OpenRouter (and legacy Gemini) API key updated at runtime (in-memory only).')
 
         return Response({
             'success': True,
-            'message': 'Gemini API key configured successfully!',
+            'message': 'OpenRouter AI connected successfully! The key is active for this session.',
             'model': gemini_client._model_name,
             'configured': True,
         })
