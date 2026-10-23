@@ -1,0 +1,10 @@
+"""App configuration for the sources application."""
+
+from django.apps import AppConfig
+
+
+class SourcesConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.sources'
+    label = 'sources'
+    verbose_name = 'Sources & Evidence'

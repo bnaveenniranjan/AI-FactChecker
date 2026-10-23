@@ -1,0 +1,633 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="app-container">
+
+  <!-- ========================================================================
+       HERO & AI SEARCH BAR
+       ======================================================================== -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="status-indicator" style="background: #38BDF8;"></span>
+      <span>Gemini 2.0 AI Source-Backed Grounding Engine</span>
+    </div>
+    
+    <h2 class="hero-title">
+      AI Government Scheme <span class="highlight">Fact-Checker</span> & Intelligence
+    </h2>
+    <p class="hero-subtitle">
+      Search any government welfare scheme, initiative, or public claim to explore its chronological timeline, historical leadership, budget allocations, and verified primary evidence.
+    </p>
+
+    <!-- Search Box -->
+    <div class="search-container">
+      <div class="search-box">
+        <div class="search-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          id="mainSearchInput" 
+          class="search-input" 
+          placeholder="e.g. Explain PM-KISAN from launch to present, or enter a scheme name..."
+          autocomplete="off"
+        >
+        <button id="mainSearchBtn" class="search-btn">
+          <span>AI Research</span>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Quick Preset Prompt Chips -->
+      <div class="preset-chips">
+        <span class="chip-label">Trending Schemes:</span>
+        <button type="button" class="chip preset-chip" data-query="PM-KISAN">
+          <span>PM-KISAN</span>
+        </button>
+        <button type="button" class="chip preset-chip" data-query="MGNREGA">
+          <span>MGNREGA Rural Employment</span>
+        </button>
+        <button type="button" class="chip preset-chip" data-query="Ayushman Bharat PM-JAY">
+          <span>Ayushman Bharat (PM-JAY)</span>
+        </button>
+        <button type="button" class="chip preset-chip" data-query="PM Awas Yojana PMAY">
+          <span>Pradhan Mantri Awas Yojana</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       TAB 1: SCHEME EXPLORER (SEARCH RESULTS & CHRONOLOGICAL TIMELINE)
+       ======================================================================== -->
+  <section id="tab-explorer" class="tab-content" style="display: block;">
+    
+    <!-- Loading Animation (Hidden by default) -->
+    <div id="explorerLoading" class="loading-container" style="display: none;">
+      <div class="loading-pulse"></div>
+      <h3 style="font-size: 22px; font-weight: 700; color: #000000; margin-bottom: 8px;">Retrieving Official Government Records</h3>
+      <p id="loadingQueryText" style="color: var(--text-secondary); max-width: 500px; margin: 0 auto;">
+        Discovering primary sources from PIB, Ministry portals, and synthesizing with Gemini...
+      </p>
+    </div>
+
+    <!-- Active Research Results View -->
+    <div id="explorerResults">
+      
+      <!-- Top Scheme Hero Overview Card -->
+      <div class="scheme-hero-card">
+        <div>
+          <div class="scheme-badge-row">
+            <span id="resSchemeCategory" class="badge badge-blue">Agriculture & Farmers Welfare</span>
+            <span id="resSchemeStatus" class="badge badge-green">Active • Central Sector Scheme</span>
+            <span id="resJurisdiction" class="badge badge-cyan">CENTRAL GOV</span>
+          </div>
+
+          <h3 id="resSchemeName" class="scheme-title">Pradhan Mantri Kisan Samman Nidhi</h3>
+          <p id="resSchemeDesc" class="scheme-desc">
+            Direct income support scheme providing ₹6,000 per year in three equal 4-monthly installments directly into the Aadhaar-seeded bank accounts of all landholding farmer families across the country.
+          </p>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Launch Date</span>
+              <span id="resLaunchDate" class="meta-value">24 February 2019 (Effective: 1 Dec 2018)</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Administering Ministry</span>
+              <span class="meta-value">Ministry of Agriculture & Farmers Welfare</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Target Beneficiaries</span>
+              <span id="resBeneficiaries" class="meta-value">All Landholding Farmer Families nationwide</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Funding Pattern</span>
+              <span class="meta-value">100% Central Sector (Direct DBT Transfer)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side Card: Portal & AI Metadata -->
+        <div class="scheme-side-card">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Official Portal</span>
+              <span id="resSchemeAbbr" style="font-weight: 700; color: #000000; font-size: 13px;">(PM-KISAN)</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+              Online beneficiary registration, e-KYC authentication, and installment status verification:
+            </p>
+          </div>
+
+          <div>
+            <a id="resPortalBtn" href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer" class="portal-link-btn">
+              <span>Open Official Portal</span>
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+            <div id="resAiModelBadge" style="text-align: center; margin-top: 10px; font-size: 11px; color: var(--text-muted);">
+              Analyzed by: Gemini 2.0 Flash Grounding
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Political & Administrative Leadership Ribbon -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>Political & Administrative Leadership Accountability</span>
+          </div>
+          <span style="font-size: 13px; color: var(--text-muted);">Tenure & Responsibility Attribution</span>
+        </div>
+
+        <div id="resLeadershipContainer" class="leadership-grid">
+          <div class="leadership-card">
+            <div class="avatar-badge">NM</div>
+            <div class="leader-info">
+              <h4>Narendra Modi</h4>
+              <div class="leader-role">Prime Minister (Formal Launch)</div>
+              <div class="leader-tenure">NDA Government • Bharatiya Janata Party (BJP)</div>
+            </div>
+          </div>
+          <div class="leadership-card">
+            <div class="avatar-badge">NT</div>
+            <div class="leader-info">
+              <h4>Narendra Singh Tomar</h4>
+              <div class="leader-role">Union Minister of Agriculture</div>
+              <div class="leader-tenure">2019 – 2023 • Ministry of Agriculture & Farmers Welfare</div>
+            </div>
+          </div>
+          <div class="leadership-card">
+            <div class="avatar-badge">PG</div>
+            <div class="leader-info">
+              <h4>Piyush Goyal</h4>
+              <div class="leader-role">Interim Finance Minister (Announcement)</div>
+              <div class="leader-tenure">Union Budget 2019 Announcement • NDA Government</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chronological Interactive Timeline -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Chronological Policy & Amendment Timeline</span>
+          </div>
+
+          <!-- Timeline Category Filter Chips -->
+          <div class="timeline-filters">
+            <button type="button" class="timeline-filter-btn active" data-category="all">All Events</button>
+            <button type="button" class="timeline-filter-btn" data-category="launch">Launch</button>
+            <button type="button" class="timeline-filter-btn" data-category="amendment">Amendments</button>
+            <button type="button" class="timeline-filter-btn" data-category="eligibility">Eligibility</button>
+            <button type="button" class="timeline-filter-btn" data-category="budget">Budgets</button>
+          </div>
+        </div>
+
+        <!-- Timeline Flowchart / Journey Map -->
+        <div id="resTimelineJourneyBox" class="timeline-journey-box">
+          <div class="timeline-flow-header">
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Visual Scheme Journey</div>
+              <h4 style="margin: 2px 0 0 0; font-size: 15px; font-weight: 700; color: #000000;">Inception, Milestones &amp; Minister Operations</h4>
+            </div>
+            <span style="font-size: 12px; font-weight: 600; color: #000000; background: #E2E8F0; padding: 4px 10px; border-radius: var(--radius-full);">Chronological Progression</span>
+          </div>
+          <div id="resTimelineFlowTrack" class="timeline-flow-track">
+            <!-- Dynamic flow nodes rendered from API -->
+          </div>
+        </div>
+
+        <!-- Timeline Items List -->
+        <div id="resTimelineContainer" class="timeline">
+          <!-- Item 1 -->
+          <div class="timeline-item" data-category="launch">
+            <div class="timeline-marker"><div class="timeline-marker-dot"></div></div>
+            <div class="timeline-card">
+              <div class="timeline-card-header">
+                <span class="timeline-date">2019-02-01</span>
+                <span class="badge badge-blue">SCHEME LAUNCH</span>
+              </div>
+              <h4 class="timeline-card-title">Interim Union Budget Announcement</h4>
+              <p class="timeline-card-desc">
+                Interim Finance Minister Piyush Goyal announced the scheme with an annual allocation of ₹75,000 crore, effective retrospectively from December 1, 2018.
+              </p>
+              <div class="timeline-card-footer">
+                <div class="timeline-attribution">
+                  <span>Ministry of Finance / Union Cabinet</span>
+                </div>
+                <a href="https://pib.gov.in" target="_blank" rel="noopener noreferrer" class="timeline-citation">
+                  <span>PIB Release Archive</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="timeline-item" data-category="launch">
+            <div class="timeline-marker"><div class="timeline-marker-dot"></div></div>
+            <div class="timeline-card">
+              <div class="timeline-card-header">
+                <span class="timeline-date">2019-02-24</span>
+                <span class="badge badge-blue">NATIONWIDE ROLLOUT</span>
+              </div>
+              <h4 class="timeline-card-title">Formal Inauguration by Prime Minister Narendra Modi</h4>
+              <p class="timeline-card-desc">
+                Formally launched at Gorakhpur, Uttar Pradesh, disbursing the first ₹2,000 electronic installment to over 10 million registered farmers via DBT.
+              </p>
+              <div class="timeline-card-footer">
+                <div class="timeline-attribution">
+                  <span>Prime Minister Narendra Modi</span>
+                </div>
+                <a href="https://pib.gov.in/PressReleasePage.aspx?PRID=1566139" target="_blank" rel="noopener noreferrer" class="timeline-citation">
+                  <span>PIB PRID 1566139</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="timeline-item" data-category="eligibility">
+            <div class="timeline-marker"><div class="timeline-marker-dot"></div></div>
+            <div class="timeline-card">
+              <div class="timeline-card-header">
+                <span class="timeline-date">2019-05-31</span>
+                <span class="badge badge-cyan">ELIGIBILITY EXPANSION</span>
+              </div>
+              <h4 class="timeline-card-title">Removal of 2-Hectare Landholding Limit</h4>
+              <p class="timeline-card-desc">
+                The Union Cabinet in its first meeting of the 2nd NDA term expanded the scheme to cover all farmer families regardless of the size of their cultivable landholding, adding approximately 20 million additional beneficiaries.
+              </p>
+              <div class="timeline-card-footer">
+                <div class="timeline-attribution">
+                  <span>Union Cabinet Resolution</span>
+                </div>
+                <a href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer" class="timeline-citation">
+                  <span>Cabinet Notification</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="timeline-item" data-category="amendment">
+            <div class="timeline-marker"><div class="timeline-marker-dot"></div></div>
+            <div class="timeline-card">
+              <div class="timeline-card-header">
+                <span class="timeline-date">2022-05-21</span>
+                <span class="badge badge-blue">POLICY AMENDMENT</span>
+              </div>
+              <h4 class="timeline-card-title">Mandatory Aadhaar e-KYC and Land Seeding</h4>
+              <p class="timeline-card-desc">
+                To prevent leakages and weed out ineligible recipients, Ministry of Agriculture made OTP-based or biometric e-KYC, physical land record verification, and Aadhaar-NPCI bank seeding compulsory for receiving future installments.
+              </p>
+              <div class="timeline-card-footer">
+                <div class="timeline-attribution">
+                  <span>Ministry of Agriculture & Farmers Welfare</span>
+                </div>
+                <a href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer" class="timeline-citation">
+                  <span>Department Guidelines</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget & Financial Audit Table -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span>Budget Allocation & Expenditure Audit (BE vs RE vs Actuals)</span>
+          </div>
+          <span style="font-size: 13px; color: var(--text-muted);">Source: Ministry of Finance Union Budget Documents</span>
+        </div>
+
+        <!-- Budget KPI Metrics Cards -->
+        <div id="resBudgetKpiGrid" class="budget-kpi-grid">
+          <div class="budget-kpi-card">
+            <span class="budget-kpi-label">Total Allocated (BE)</span>
+            <span id="kpiTotalBe" class="budget-kpi-value">—</span>
+            <span class="budget-kpi-sub">Cumulative Budget Estimates</span>
+          </div>
+          <div class="budget-kpi-card">
+            <span class="budget-kpi-label">Total Actual Expenditure</span>
+            <span id="kpiTotalActual" class="budget-kpi-value">—</span>
+            <span class="budget-kpi-sub">Audited Public Outlay</span>
+          </div>
+          <div class="budget-kpi-card">
+            <span class="budget-kpi-label">Cumulative Difference</span>
+            <span id="kpiDiffAmount" class="budget-kpi-value">—</span>
+            <span id="kpiDiffSub" class="budget-kpi-sub">Actual vs Budget Estimate</span>
+          </div>
+          <div class="budget-kpi-card">
+            <span class="budget-kpi-label">Peak Allocation Year</span>
+            <span id="kpiPeakYear" class="budget-kpi-value">—</span>
+            <span id="kpiPeakSub" class="budget-kpi-sub">Highest Outlay FY</span>
+          </div>
+        </div>
+
+        <!-- Budget Visual SVG Chart Panel -->
+        <div id="resBudgetChartPanel" class="budget-chart-panel">
+          <div class="chart-header-actions">
+            <div>
+              <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #000000;">Fund Raising &amp; Expenditure Analysis Chart</h4>
+              <p style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted);">Visualizing allocation differences, expenditure variance, and year-over-year adjustments</p>
+            </div>
+            <div class="chart-tabs">
+              <button type="button" class="chart-tab-btn active" data-chart-mode="comparison">BE vs Actuals</button>
+              <button type="button" class="chart-tab-btn" data-chart-mode="difference">Fund Differences (Variance)</button>
+              <button type="button" class="chart-tab-btn" data-chart-mode="yoy">YoY Difference</button>
+            </div>
+          </div>
+          <div id="resBudgetSvgContainer" class="chart-svg-container">
+            <!-- Dynamic SVG Chart injected here -->
+          </div>
+        </div>
+
+        <div class="budget-table-container">
+          <table class="budget-table">
+            <thead>
+              <tr>
+                <th>Financial Year</th>
+                <th>Budget Estimate (BE)</th>
+                <th>Revised Estimate (RE)</th>
+                <th>Actual Expenditure</th>
+                <th>Amount Difference (Actual - BE)</th>
+                <th>YoY Fund Change</th>
+                <th>Verification Status</th>
+              </tr>
+            </thead>
+            <tbody id="resBudgetTableBody">
+              <tr>
+                <td><strong style="color: #000000;">2019-20</strong></td>
+                <td class="amount-cell">₹75,000 Cr</td>
+                <td class="amount-cell">₹54,370 Cr</td>
+                <td class="amount-cell">₹48,714 Cr</td>
+                <td><span class="badge badge-cyan">Verified</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: #000000;">2020-21</strong></td>
+                <td class="amount-cell">₹75,000 Cr</td>
+                <td class="amount-cell">₹65,000 Cr</td>
+                <td class="amount-cell">₹60,990 Cr</td>
+                <td><span class="badge badge-cyan">Verified</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: #000000;">2021-22</strong></td>
+                <td class="amount-cell">₹65,000 Cr</td>
+                <td class="amount-cell">₹67,500 Cr</td>
+                <td class="amount-cell">₹66,825 Cr</td>
+                <td><span class="badge badge-cyan">Verified</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: #000000;">2022-23</strong></td>
+                <td class="amount-cell">₹68,000 Cr</td>
+                <td class="amount-cell">₹60,000 Cr</td>
+                <td class="amount-cell">₹58,254 Cr</td>
+                <td><span class="badge badge-cyan">Verified</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: #000000;">2023-24</strong></td>
+                <td class="amount-cell">₹60,000 Cr</td>
+                <td class="amount-cell">₹60,000 Cr</td>
+                <td class="amount-cell">₹60,000 Cr</td>
+                <td><span class="badge badge-cyan">Verified</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: #000000;">2024-25</strong></td>
+                <td class="amount-cell">₹60,000 Cr</td>
+                <td class="amount-cell">—</td>
+                <td class="amount-cell" style="color: var(--text-muted);">In Progress</td>
+                <td><span class="badge badge-cyan">BE Verified</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Primary Sources Transparency List -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            <span>Primary Sources & Gazette Citations</span>
+          </div>
+          <span style="font-size: 13px; color: var(--text-muted);">No AI Hallucinations • Grounded in Public Data</span>
+        </div>
+
+        <div id="resSourcesList" class="preset-chips" style="justify-content: flex-start;">
+          <a href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer" class="chip">
+            <span>pmkisan.gov.in (Official Portal)</span>
+          </a>
+          <a href="https://pib.gov.in" target="_blank" rel="noopener noreferrer" class="chip">
+            <span>pib.gov.in (Press Information Bureau)</span>
+          </a>
+          <a href="https://indiabudget.gov.in" target="_blank" rel="noopener noreferrer" class="chip">
+            <span>indiabudget.gov.in (Union Budget Documents)</span>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/PM-KISAN" target="_blank" rel="noopener noreferrer" class="chip">
+            <span>en.wikipedia.org (Legislative Overview)</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       TAB 2: CLAIM FACT-CHECKER (LIVE VERDICT & STANCE EVIDENCE)
+       ======================================================================== -->
+  <section id="tab-factcheck" class="tab-content" style="display: none;">
+    
+    <div class="factcheck-input-card">
+      <h3 style="font-size: 22px; font-weight: 700; color: #000000; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #000000;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Verify a Government Scheme Claim
+      </h3>
+      <p style="color: var(--text-secondary); margin-bottom: 20px;">
+        Paste any statement, news headline, or political claim regarding funding, eligibility, leadership, or launch dates:
+      </p>
+
+      <textarea 
+        id="claimTextarea" 
+        class="claim-textarea" 
+        placeholder="e.g. Did the Union Government reduce the budget allocation for MGNREGA in 2024?"
+      ></textarea>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="font-size: 13px; color: var(--text-muted);">
+          Verified against official government portals, budget documents, and PIB gazette records.
+        </div>
+        <button id="verifyClaimBtn" class="search-btn">
+          <span>Run Fact-Check Verification</span>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 1-Click Test Claims -->
+    <div style="margin-bottom: 24px;">
+      <h4 style="font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">
+        Try Sample Claims to Test the Fact-Checker:
+      </h4>
+      <div class="sample-claims-grid">
+        <div class="sample-claim-card" data-claim="PM-KISAN provides Rs 6,000 per year directly to eligible farmers bank accounts in three equal installments.">
+          <span>"PM-KISAN provides ₹6,000/yr in 3 installments"</span>
+          <span class="badge badge-green">Supported Test</span>
+        </div>
+        <div class="sample-claim-card" data-claim="PM-KISAN scheme was originally introduced and launched by the UPA government in 2012.">
+          <span>"PM-KISAN was launched by UPA in 2012"</span>
+          <span class="badge" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #B91C1C;">Contradicted Test</span>
+        </div>
+        <div class="sample-claim-card" data-claim="The Union Government reduced the budget allocation for MGNREGA in Budget 2023-24 compared to previous years.">
+          <span>"Government reduced MGNREGA budget in 2023-24"</span>
+          <span class="badge" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #B45309;">Partial Support Test</span>
+        </div>
+        <div class="sample-claim-card" data-claim="Ayushman Bharat PM-JAY provides health insurance coverage up to Rs 5 lakh per family per year.">
+          <span>"Ayushman Bharat covers ₹5 lakh per family/yr"</span>
+          <span class="badge badge-green">Supported Test</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="factcheckLoading" class="loading-container" style="display: none;">
+      <div class="loading-pulse"></div>
+      <h3 style="font-size: 20px; font-weight: 700; color: #000000;">Cross-Checking Claim with Official Sources</h3>
+      <p style="color: var(--text-secondary);">Querying external source indices and running structured Gemini verification...</p>
+    </div>
+
+    <!-- Fact-Check Verdict Card -->
+    <div id="factcheckVerdictContainer" style="display: none;">
+      <div id="verdictCard" class="verdict-card supported">
+        <div id="verdictBadge" class="verdict-badge-lg supported">
+          Supported by Evidence
+        </div>
+
+        <h3 id="verdictClaimQuote" class="claim-quote">
+          "PM-KISAN provides Rs 6,000 per year directly to eligible farmers bank accounts in three equal installments."
+        </h3>
+
+        <p id="verdictExplanationText" class="verdict-explanation">
+          Official guidelines from the Ministry of Agriculture and Farmers Welfare confirm that eligible landholding farmer families receive direct income support of ₹6,000 per year, disbursed in three equal installments of ₹2,000 every four months through DBT.
+        </p>
+
+        <!-- Confidence Meter -->
+        <div class="confidence-bar-container">
+          <span class="confidence-label">Evidence Confidence:</span>
+          <div class="confidence-meter">
+            <div id="confidenceFill" class="confidence-fill high"></div>
+          </div>
+          <span id="confidenceScoreText" class="confidence-label" style="color: #000000;">HIGH CONFIDENCE</span>
+        </div>
+
+        <!-- Evidence Stance Split -->
+        <div class="evidence-columns">
+          <!-- Supporting Evidence -->
+          <div class="evidence-box">
+            <div class="evidence-box-title" style="color: #000000;">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Supporting Evidence Passages</span>
+            </div>
+            <div id="supportingEvidenceList">
+              <div class="evidence-item supports">
+                <p>The PM-KISAN scheme provides an income support of Rs. 6000/- per year to all landholding farmer families across the country in three equal installments of Rs. 2000/-.</p>
+                <a href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer" class="evidence-source-link">
+                  <span>pmkisan.gov.in (MoA&FW Guidelines)</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contradicting Evidence -->
+          <div class="evidence-box">
+            <div class="evidence-box-title" style="color: #000000;">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span>Contradicting Evidence Passages</span>
+            </div>
+            <div id="contradictingEvidenceList">
+              <p class="text-muted" style="font-size: 13px;">No contradictory records surfaced in official databases.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       TAB 3: SCHEMES DIRECTORY (ALL VERIFIED SCHEMES)
+       ======================================================================== -->
+  <section id="tab-directory" class="tab-content" style="display: none;">
+    <div style="margin-bottom: 24px;">
+      <h3 style="font-size: 26px; font-weight: 700; color: #000000; margin-bottom: 6px;">Verified Government Schemes Directory</h3>
+      <p style="color: var(--text-secondary);">Browse researched Indian welfare initiatives with complete funding records and timeline history.</p>
+    </div>
+
+    <div class="schemes-grid">
+      {% for scheme in schemes %}
+      <div class="scheme-card" data-scheme-id="{{ scheme.id }}" data-scheme-name="{{ scheme.name|lower }} {{ scheme.abbreviation|lower }}">
+        <div class="scheme-card-header">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span class="badge badge-blue">{{ scheme.category|title }}</span>
+            <span class="badge badge-green">{{ scheme.operational_status|title }}</span>
+          </div>
+          <h4 class="scheme-card-title">{{ scheme.name }}</h4>
+          <span style="font-size: 12px; color: #000000; font-weight: 700;">{{ scheme.abbreviation }}</span>
+        </div>
+
+        <p class="scheme-card-desc">
+          {{ scheme.original_objectives|default:"National public welfare scheme administered by the Central Government with verified timeline and budget history." }}
+        </p>
+
+        <div class="scheme-card-footer">
+          <div style="font-size: 12px; color: var(--text-muted);">
+            Launched: <strong>{{ scheme.launch_date|default:"Verified" }}</strong>
+          </div>
+          <button type="button" class="btn-ai-status" onclick="loadSchemeById({{ scheme.id }})" style="border-radius: var(--radius-sm); font-size: 13px;">
+            <span>Explore Timeline</span>
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      {% empty %}
+      <div class="panel" style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+        <h4 style="font-size: 20px; color: #000000; margin-bottom: 8px;">No schemes in database</h4>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Run `python manage.py seed_schemes` or use the search bar above.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

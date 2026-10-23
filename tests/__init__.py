@@ -1,1 +1,1 @@
-"""Tests for budgets app."""
+"""Tests package for AI Government Scheme Fact Checker."""

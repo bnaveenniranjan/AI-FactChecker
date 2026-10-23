@@ -1,0 +1,10 @@
+"""App configuration for the leadership application."""
+
+from django.apps import AppConfig
+
+
+class LeadershipConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.leadership'
+    label = 'leadership'
+    verbose_name = 'Political Leadership & Government'
