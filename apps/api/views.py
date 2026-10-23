@@ -1,9 +1,4 @@
-"""
-REST API views for the AI Government Scheme Fact Checker.
-
-All external API calls (Gemini, source retrieval) happen in the service layer.
-Views only handle request/response marshalling, validation, and HTTP concerns.
-"""
+"""API views."""
 
 from __future__ import annotations
 
@@ -42,27 +37,19 @@ from .serializers import (
 log = logging.getLogger('apps.api')
 
 
-# ---------------------------------------------------------------------------
 # Research
-# ---------------------------------------------------------------------------
-
 class ResearchView(APIView):
-    """
-    POST /api/v1/research/
-
-    Start or execute a scheme research request.
-    Returns the research job with status and result (if synchronous).
-    """
+    """Run scheme research."""
 
     def post(self, request):
-        # Attempt to parse JSON payload safely, handling potential BOM or malformed data
+        # Parse JSON safely
         try:
             data = request.data
         except Exception as exc:
-            # Fallback: manually load raw body, stripping possible UTF-8 BOM
+            # Fallback body decode
             try:
                 raw = request.body.decode('utf-8-sig').strip()
-                # Remove surrounding quotes if the payload is sent as a quoted string
+                # Strip extra quotes
                 if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
                     raw = raw[1:-1]
                 data = json.loads(raw)
@@ -72,14 +59,14 @@ class ResearchView(APIView):
                     {'detail': f'Invalid JSON payload: {exc2}'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        # Validate input using serializer
+        # Validate input
         serializer = ResearchRequestSerializer(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         query = serializer.validated_data['query']
 
-        # Create a job record
+        # Create job
         job = ResearchJob.objects.create(query=query)
 
         try:
@@ -89,7 +76,7 @@ class ResearchView(APIView):
             return Response(ResearchJobSerializer(job).data, status=status.HTTP_201_CREATED)
         except Exception as exc:
             log.error('Research pipeline failed: %s', exc, exc_info=True)
-            # Job is already marked failed inside orchestrator.execute
+            # Job marked failed
             job.refresh_from_db()
             return Response(
                 {
@@ -101,22 +88,16 @@ class ResearchView(APIView):
 
 
 class ResearchDetailView(generics.RetrieveAPIView):
-    """GET /api/v1/research/{id}/ — Retrieve research job status and results."""
+    """Get research job details."""
 
     queryset = ResearchJob.objects.all()
     serializer_class = ResearchJobSerializer
 
 
-# ---------------------------------------------------------------------------
 # Schemes
-# ---------------------------------------------------------------------------
 
 class SchemeListView(generics.ListAPIView):
-    """
-    GET /api/v1/schemes/
-
-    Search schemes. Supports ?q=<query>, ?category=<cat>, ?jurisdiction=<j>.
-    """
+    """List schemes."""
 
     serializer_class = SchemeListSerializer
 
@@ -137,7 +118,7 @@ class SchemeListView(generics.ListAPIView):
 
 
 class SchemeDetailView(generics.RetrieveAPIView):
-    """GET /api/v1/schemes/{id}/ — Full scheme details."""
+    """Get scheme details."""
 
     queryset = Scheme.objects.prefetch_related('aliases', 'benefits', 'eligibility_rules')
     serializer_class = SchemeDetailSerializer
@@ -145,12 +126,7 @@ class SchemeDetailView(generics.RetrieveAPIView):
 
 
 class SchemeTimelineView(APIView):
-    """
-    GET /api/v1/schemes/{id}/timeline/
-
-    Chronological events for a scheme.
-    Supports ?event_type=<type>&year=<year> filters.
-    """
+    """Get scheme timeline."""
 
     def get(self, request, pk):
         scheme = get_object_or_404(Scheme, pk=pk)
@@ -174,7 +150,7 @@ class SchemeTimelineView(APIView):
 
 
 class SchemeBudgetView(APIView):
-    """GET /api/v1/schemes/{id}/budgets/ — Budget history for a scheme."""
+    """Get scheme budgets."""
 
     def get(self, request, pk):
         scheme = get_object_or_404(Scheme, pk=pk)
@@ -184,7 +160,7 @@ class SchemeBudgetView(APIView):
 
 
 class SchemeLeadershipView(APIView):
-    """GET /api/v1/schemes/{id}/leadership/ — Historical leadership for a scheme."""
+    """Get scheme leadership."""
 
     def get(self, request, pk):
         from django.db.models import Q
@@ -207,7 +183,7 @@ class SchemeLeadershipView(APIView):
                     seen_leaders.add(name.lower())
                 results.append(item)
 
-        # Supplement with distinct leaders and ministers recorded in timeline events
+        # Add leaders from timeline
         events_with_leaders = scheme.timeline_events.filter(
             Q(responsible_leader__isnull=False) | Q(responsible_ministry__isnull=False)
         ).select_related(
@@ -260,16 +236,9 @@ class SchemeLeadershipView(APIView):
         return Response({'count': len(results), 'results': results})
 
 
-# ---------------------------------------------------------------------------
-# Fact-checking
-# ---------------------------------------------------------------------------
-
+# Fact check
 class FactCheckView(APIView):
-    """
-    POST /api/v1/fact-check/
-
-    Verify a user-supplied factual claim against retrieved sources.
-    """
+    """Fact check claim."""
 
     def post(self, request):
         serializer = FactCheckRequestSerializer(data=request.data)
@@ -290,14 +259,14 @@ class FactCheckView(APIView):
 
         start_time = time.monotonic()
 
-        # Create claim record
+        # Save claim
         claim = Claim.objects.create(
             claim_text=claim_text,
             scheme=scheme,
         )
 
         try:
-            # Build candidate URLs from scheme name or generic search
+            # Find candidate URLs
             scheme_name = scheme.name if scheme else claim_text[:50]
             candidate_urls = [
                 f'https://pib.gov.in/allRel.aspx?query={scheme_name}',
@@ -312,7 +281,7 @@ class FactCheckView(APIView):
 
             verdict = gemini_client.fact_check_claim(claim_text, passages, allow_fallback=True)
 
-            # Persist verdict to claim
+            # Save verdict
             claim.verdict = verdict.verdict.value
             claim.explanation = verdict.explanation
             claim.confidence = verdict.confidence.value
@@ -320,7 +289,7 @@ class FactCheckView(APIView):
             claim.verified_at = timezone.now()
             claim.save()
 
-            # Persist evidence links
+            # Save evidence links
             all_evidence = verdict.supporting_evidence + verdict.contradicting_evidence
             for ev in all_evidence:
                 source, _ = Source.objects.get_or_create(
@@ -369,23 +338,17 @@ class FactCheckView(APIView):
             )
 
 
-# ---------------------------------------------------------------------------
 # Sources
-# ---------------------------------------------------------------------------
-
 class SourceDetailView(generics.RetrieveAPIView):
-    """GET /api/v1/sources/{id}/ — Source metadata and evidence."""
+    """Get source details."""
 
     queryset = Source.objects.prefetch_related('excerpts')
     serializer_class = SourceSerializer
 
 
-# ---------------------------------------------------------------------------
-# Gemini AI Configuration
-# ---------------------------------------------------------------------------
-
+# AI configuration
 class GeminiStatusView(APIView):
-    """GET /api/v1/gemini/status/ — Check Gemini API status and active model."""
+    """Check AI status."""
 
     def get(self, request):
         from apps.ai_service.client import gemini_client
@@ -404,7 +367,7 @@ class GeminiStatusView(APIView):
 
 
 class GeminiConfigureView(APIView):
-    """POST /api/v1/gemini/configure/ — Set Gemini API key and model dynamically."""
+    """Configure AI settings."""
 
     def post(self, request):
         api_key = request.data.get('api_key', '').strip()
@@ -417,7 +380,7 @@ class GeminiConfigureView(APIView):
         import os
         from django.conf import settings
 
-        # Update both OpenRouter and legacy Gemini env vars for compatibility
+        # Save API key
         gemini_client.set_api_key(api_key)
         if model_name:
             gemini_client._model_name = model_name

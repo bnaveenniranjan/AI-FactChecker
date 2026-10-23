@@ -1,4 +1,4 @@
-"""Admin interface configuration for the budgets app."""
+"""Budget admin configuration."""
 
 from django.contrib import admin
 
@@ -7,7 +7,7 @@ from .models import BudgetRecord
 
 @admin.register(BudgetRecord)
 class BudgetRecordAdmin(admin.ModelAdmin):
-    """Admin representation for Scheme Budget records across financial years."""
+    """Budget admin."""
 
     list_display = (
         'scheme',
@@ -73,5 +73,5 @@ class BudgetRecordAdmin(admin.ModelAdmin):
 
     @admin.display(description='Financial Year', ordering='financial_year_start')
     def financial_year_display(self, obj: BudgetRecord) -> str:
-        """Display formatted financial year."""
+        """Show financial year."""
         return obj.financial_year_display

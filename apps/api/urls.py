@@ -1,4 +1,4 @@
-"""Versioned URL routing for the REST API."""
+"""API routes."""
 
 from django.urls import path
 
@@ -18,13 +18,13 @@ urlpatterns = [
     path('v1/schemes/<int:pk>/budgets/', views.SchemeBudgetView.as_view(), name='scheme-budgets'),
     path('v1/schemes/<int:pk>/leadership/', views.SchemeLeadershipView.as_view(), name='scheme-leadership'),
 
-    # Fact-checking
+    # Fact check
     path('v1/fact-check/', views.FactCheckView.as_view(), name='fact-check-create'),
 
     # Sources
     path('v1/sources/<int:pk>/', views.SourceDetailView.as_view(), name='source-detail'),
 
-    # Gemini AI
+    # AI
     path('v1/gemini/status/', views.GeminiStatusView.as_view(), name='gemini-status'),
     path('v1/gemini/configure/', views.GeminiConfigureView.as_view(), name='gemini-configure'),
 ]

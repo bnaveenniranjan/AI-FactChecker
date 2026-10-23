@@ -1,4 +1,4 @@
-"""App configuration for the AI service application."""
+"""AI service app config."""
 
 from django.apps import AppConfig
 

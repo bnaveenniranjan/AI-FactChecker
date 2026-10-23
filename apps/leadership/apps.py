@@ -1,4 +1,4 @@
-"""App configuration for the leadership application."""
+"""Leadership app config."""
 
 from django.apps import AppConfig
 

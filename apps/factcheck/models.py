@@ -1,24 +1,10 @@
-"""
-Models for the factcheck app.
-
-Implements Claim → ClaimEvidence → FactCheckResult pipeline.
-
-Key rules:
-- Do not label a claim false solely because no supporting source was found.
-  Use INSUFFICIENT_EVIDENCE instead.
-- Every verdict must trace to actual retrieved evidence.
-- Official source status does not automatically validate every interpretation.
-"""
+"""Fact check models."""
 
 from django.db import models
 
 
 class Claim(models.Model):
-    """
-    A factual claim to be verified.
-
-    Extracted from a user query or submitted directly for verification.
-    """
+    """Claim to verify."""
 
     STATUS_SUPPORTED = 'supported'
     STATUS_CONTRADICTED = 'contradicted'
@@ -94,12 +80,7 @@ class Claim(models.Model):
 
 
 class ClaimEvidence(models.Model):
-    """
-    Links a claim to a specific evidence excerpt, indicating support or contradiction.
-
-    When sources disagree, both supporting and contradicting evidence are stored
-    and displayed — contradicting evidence is never silently removed.
-    """
+    """Evidence for a claim."""
 
     SUPPORT_SUPPORTS = 'supports'
     SUPPORT_CONTRADICTS = 'contradicts'
@@ -159,12 +140,7 @@ class ClaimEvidence(models.Model):
 
 
 class FactCheckResult(models.Model):
-    """
-    Full fact-check result record for a submitted claim.
-
-    Stores the complete pipeline output including all evidence,
-    timestamp, and Gemini model used.
-    """
+    """Fact check result record."""
 
     id = models.BigAutoField(primary_key=True)
     claim = models.ForeignKey(

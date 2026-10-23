@@ -1,10 +1,4 @@
-"""
-Fallback synthesis engine when GEMINI_API_KEY is not configured or offline.
-
-Analyzes retrieved source passages and query/claim text locally to extract
-dates, institutions, budgets, and claims, ensuring the application remains
-functional and testable even without an active Gemini API key.
-"""
+"""Fallback search engine."""
 
 from __future__ import annotations
 
@@ -27,9 +21,7 @@ from .schemas import (
 
 
 def fallback_research_scheme(query: str, retrieved_passages: List[dict]) -> ResearchResultSchema:
-    """
-    Synthesize scheme overview, timeline, and leadership from query and retrieved sources.
-    """
+    """Build fallback scheme data."""
     clean_query = query.strip()
     scheme_name = clean_query
     for prefix in ['explain ', 'show ', 'what is ', 'who launched ', 'tell me about ', 'history of ']:
@@ -37,15 +29,15 @@ def fallback_research_scheme(query: str, retrieved_passages: List[dict]) -> Rese
             scheme_name = clean_query[len(prefix):].strip()
             break
 
-    # Look for matching passages
+    # Match passages
     all_text = ' '.join(p.get('text', '') for p in retrieved_passages)
     sources_used = [p.get('url') for p in retrieved_passages if p.get('url')]
 
-    # Extract launch year if found
+    # Get launch year
     years = re.findall(r'\b(19\d\d|20\d\d)\b', all_text or clean_query)
     launch_year = years[0] if years else '2019'
 
-    # Extract ministries
+    # Get ministry
     ministry = 'Ministry of Agriculture and Farmers Welfare'
     if 'rural' in (all_text + clean_query).lower() or 'mgnrega' in clean_query.lower():
         ministry = 'Ministry of Rural Development'
@@ -167,13 +159,11 @@ def fallback_research_scheme(query: str, retrieved_passages: List[dict]) -> Rese
 
 
 def fallback_fact_check_claim(claim: str, retrieved_passages: List[dict]) -> FactCheckVerdictSchema:
-    """
-    Evaluate a claim against retrieved passages or known facts when Gemini API key is unset.
-    """
+    """Check claim using fallback rules."""
     c_lower = claim.lower()
     sources_used = [p for p in retrieved_passages if p.get('url')]
 
-    # Check common known claim patterns
+    # Check claim patterns
     verdict = ClaimVerdict.SUPPORTED
     confidence = ConfidenceLevel.HIGH
     explanation = ''
@@ -181,7 +171,7 @@ def fallback_fact_check_claim(claim: str, retrieved_passages: List[dict]) -> Fac
     contradicting: List[EvidenceItemSchema] = []
 
     if 'mgnrega' in c_lower and ('reduc' in c_lower or 'decrease' in c_lower or 'cut' in c_lower):
-        # MGNREGA budget claim analysis
+        # Check MGNREGA budget
         verdict = ClaimVerdict.PARTIALLY_SUPPORTED
         confidence = ConfidenceLevel.HIGH
         explanation = (
@@ -278,7 +268,7 @@ def fallback_fact_check_claim(claim: str, retrieved_passages: List[dict]) -> Fac
             ))
 
     else:
-        # Generic claim evaluation from retrieved text
+        # Check general claim
         if sources_used:
             verdict = ClaimVerdict.SUPPORTED
             confidence = ConfidenceLevel.MEDIUM

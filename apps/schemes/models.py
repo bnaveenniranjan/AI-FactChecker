@@ -1,23 +1,11 @@
-"""
-Models for the schemes app.
-
-Core domain model: Scheme, SchemeAlias, SchemeBenefit, EligibilityRule.
-All models represent the historical record of a government scheme,
-not just its current state.
-"""
+"""Scheme models."""
 
 from django.db import models
 from django.utils.text import slugify
 
 
 class Scheme(models.Model):
-    """
-    A government welfare scheme, program, or policy initiative.
-
-    Represents either a central-government, state-government, or jointly
-    funded scheme. A single scheme may have multiple names, aliases, or
-    abbreviations over time.
-    """
+    """Government welfare scheme."""
 
     JURISDICTION_CENTRAL = 'central'
     JURISDICTION_STATE = 'state'
@@ -150,12 +138,7 @@ class Scheme(models.Model):
 
 
 class SchemeAlias(models.Model):
-    """
-    Alternative names, abbreviations, or translations for a scheme.
-
-    Multiple aliases per scheme are supported. Enables search matching
-    across different names users might enter.
-    """
+    """Scheme alternate names."""
 
     id = models.BigAutoField(primary_key=True)
     scheme = models.ForeignKey(
@@ -188,12 +171,7 @@ class SchemeAlias(models.Model):
 
 
 class SchemeBenefit(models.Model):
-    """
-    A specific benefit, entitlement, or facility provided by a scheme.
-
-    Preserves history: when a benefit changes, a new record is added
-    with a different effective_from date rather than overwriting old data.
-    """
+    """Scheme benefit details."""
 
     id = models.BigAutoField(primary_key=True)
     scheme = models.ForeignKey(
@@ -244,11 +222,7 @@ class SchemeBenefit(models.Model):
 
 
 class EligibilityRule(models.Model):
-    """
-    An eligibility criterion for a scheme, with effective-date tracking.
-
-    Stores each revision separately to preserve historical eligibility rules.
-    """
+    """Scheme eligibility rule."""
 
     id = models.BigAutoField(primary_key=True)
     scheme = models.ForeignKey(

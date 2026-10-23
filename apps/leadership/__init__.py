@@ -1,1 +1,1 @@
-"""Leadership application package."""
+"""Leadership package."""

@@ -1,52 +1,17 @@
-"""
-Prompt templates for Gemini API calls.
-
-Each prompt function constructs a structured prompt that:
-1. Receives retrieved evidence as context.
-2. Instructs Gemini to distinguish sourced facts from missing information.
-3. Never asks Gemini to invent sources, dates, or amounts.
-4. Requests structured JSON output matching our Pydantic schemas.
-"""
+"""AI prompt templates."""
 
 from typing import List
 
 
 def build_scheme_research_prompt(query: str, retrieved_passages: List[dict]) -> str:
-    """
-    Build a prompt for comprehensive scheme research.
-
-    Args:
-        query: The user's search query.
-        retrieved_passages: List of dicts with keys: url, title, publisher,
-                            published_date, text.
-
-    Returns:
-        A structured prompt string.
-    """
+    """Build scheme research prompt."""
     passages_text = _format_passages(retrieved_passages)
 
     return f"""You are a fact-checking assistant specialising in Indian government schemes and public policy.
 
 Your task is to analyse the USER QUERY and the RETRIEVED EVIDENCE below, and produce a structured JSON research result.
 
-CRITICAL RULES — YOU MUST FOLLOW THESE EXACTLY:
-1. Only use facts that are explicitly stated in the RETRIEVED EVIDENCE below.
-2. If a field cannot be determined from the evidence, set it to null and add the field name to "data_gaps".
-3. Do NOT invent dates, amounts, names, URLs, quotations, or document titles.
-4. Do NOT treat your training knowledge as a source. Only use the RETRIEVED EVIDENCE.
-5. Clearly distinguish between officially stated reasons (from government records) and independent analysis.
-6. Do not label a claim false merely because no supporting source was found — use "insufficient_evidence" instead.
-7. When sources disagree, include both versions and note the disagreement.
 
-TIMELINE REQUIREMENT — VERY IMPORTANT:
-- Extract EVERY timeline event from the scheme's launch date all the way to the most recent event in the evidence.
-- Do NOT limit to recent years. Include the launch event, every amendment, every budget update, every leadership change, and every eligibility change found in the evidence.
-- List events in chronological order, oldest first.
-- If the evidence mentions any date-linked event, it must appear as a timeline entry.
-
-BUDGET REQUIREMENT:
-- Extract budget records for EVERY financial year mentioned in the evidence — from the first year to the most recent.
-- Do not skip any year. Include years with partial data (mark data_gaps accordingly).
 
 USER QUERY:
 {query}
@@ -131,16 +96,7 @@ Respond with ONLY the JSON object. No markdown code fences, no commentary outsid
 
 
 def build_fact_check_prompt(claim: str, retrieved_passages: List[dict]) -> str:
-    """
-    Build a prompt for verifying a single factual claim.
-
-    Args:
-        claim: The claim to verify.
-        retrieved_passages: Evidence passages retrieved for this claim.
-
-    Returns:
-        A structured prompt string.
-    """
+    """Build fact check prompt."""
     passages_text = _format_passages(retrieved_passages)
 
     return f"""You are a fact-checking assistant specialising in Indian government schemes and public policy.
@@ -188,7 +144,7 @@ Respond with ONLY the JSON object. No markdown, no commentary.
 
 
 def _format_passages(passages: List[dict]) -> str:
-    """Format retrieved passages into a readable evidence block."""
+    """Format evidence passages."""
     if not passages:
         return 'No evidence was retrieved. All fields should be null and data_gaps should reflect this.'
 

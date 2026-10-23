@@ -1,1 +1,1 @@
-"""Factcheck application package."""
+"""Fact check package."""

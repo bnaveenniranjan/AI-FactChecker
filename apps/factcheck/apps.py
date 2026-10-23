@@ -1,4 +1,4 @@
-"""App configuration for the factcheck application."""
+"""Fact check app config."""
 
 from django.apps import AppConfig
 

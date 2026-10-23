@@ -1,8 +1,4 @@
-"""Models for the budgets app in the AI Government Scheme Fact Checker project.
-
-This module stores budget allocations, revised estimates, and actual expenditures
-for schemes across financial years, maintaining clear separation between estimates and actuals.
-"""
+"""Budget models."""
 
 from decimal import Decimal
 from typing import Optional
@@ -12,11 +8,7 @@ from django.db import models
 
 
 class BudgetRecord(models.Model):
-    """Stores budget estimates, revised estimates, and actual expenditure for a scheme per financial year.
-
-    IMPORTANT: Budget estimate, revised estimate, and actual expenditure are SEPARATE fields,
-    never interchangeable.
-    """
+    """Scheme budget record."""
 
     CATEGORY_CENTRAL_SECTOR = 'central_sector'
     CATEGORY_CENTRALLY_SPONSORED = 'centrally_sponsored'
@@ -214,14 +206,14 @@ class BudgetRecord(models.Model):
 
     @property
     def financial_year_display(self) -> str:
-        """Return formatted financial year string (e.g. '2024-25')."""
+        """Get financial year text."""
         if self.financial_year_start and self.financial_year_end:
             return f'{self.financial_year_start}-{str(self.financial_year_end)[-2:]}'
         return ''
 
     @property
     def yoy_change_info(self) -> Optional[dict]:
-        """Placeholder for year-over-year change calculations (computed dynamically in services)."""
+        """Get year change info."""
         return None
 
     def __str__(self) -> str:

@@ -1,1 +1,1 @@
-"""API app — no Django models needed."""
+"""API models."""

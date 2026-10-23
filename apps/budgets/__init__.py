@@ -1,1 +1,1 @@
-"""Budgets application package."""
+"""Budget package."""

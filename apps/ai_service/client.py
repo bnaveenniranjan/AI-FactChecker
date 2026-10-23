@@ -1,17 +1,4 @@
-"""
-Gemini API client abstraction.
-
-This module is the ONLY place in the codebase that talks to Google's Gemini API.
-All other modules call GeminiClient, never the SDK directly.
-
-Responsibilities:
-- Construct and submit requests.
-- Parse and validate structured JSON responses via Pydantic.
-- Handle timeouts, rate limits, and transient failures with bounded backoff.
-- Log request metadata WITHOUT exposing the API key or raw user data.
-- Support model configuration via environment variables.
-- Raise typed exceptions so callers can handle failures gracefully.
-"""
+"""AI client."""
 
 from __future__ import annotations
 
@@ -31,13 +18,12 @@ log = logging.getLogger('apps.ai_service')
 
 T = TypeVar('T', bound=BaseModel)
 
-# Backoff configuration — fast failover to backup models
+# Retry settings
 MAX_RETRIES = 1
 INITIAL_BACKOFF_S = 1.0
 BACKOFF_MULTIPLIER = 1.5
 
-# Free OpenRouter models tried in order when the primary model is overloaded.
-# All of these are active free-tier models on OpenRouter.
+# Fallback models
 FALLBACK_MODELS = [
     'nvidia/nemotron-3.5-lightning:free',
     'nvidia/nemotron-3-ultra-550b-a55b:free',
@@ -48,15 +34,15 @@ FALLBACK_MODELS = [
 
 
 class GeminiError(Exception):
-    """Base exception for Gemini API errors."""
+    """AI error."""
 
 
 class GeminiRateLimitError(GeminiError):
-    """Raised when the API quota is exhausted."""
+    """Rate limit error."""
 
 
 class GeminiValidationError(GeminiError):
-    """Raised when the AI response does not match the expected schema."""
+    """Data format error."""
 
     def __init__(self, message: str, raw_response: str = ''):
         super().__init__(message)
@@ -64,15 +50,10 @@ class GeminiValidationError(GeminiError):
 
 
 class GeminiClient:
-    """
-    Provider-agnostic AI client with Gemini as the current backend.
-
-    To switch AI providers in the future, replace this class's internals
-    while keeping the same public interface.
-    """
+    """AI client helper."""
 
     def __init__(self):
-        # Support both OPENROUTER_API_KEY and legacy GEMINI_API_KEY env vars
+        # Read API key
         self._api_key = (
             getattr(settings, 'OPENROUTER_API_KEY', '')
             or getattr(settings, 'GEMINI_API_KEY', '')
@@ -83,12 +64,10 @@ class GeminiClient:
             or getattr(settings, 'GEMINI_MODEL', '')
             or 'google/gemma-4-31b-it:free'
         )
-        self._client = None  # kept for backward compatibility; not used
+        self._client = None  # Legacy client
 
     def is_configured(self) -> bool:
-        """Check if an API key is configured.
-        Supports both OPENROUTER_API_KEY and legacy GEMINI_API_KEY for compatibility.
-        """
+        """Check if API key exists."""
         import os
         key = (
             self._api_key
@@ -100,21 +79,19 @@ class GeminiClient:
         return bool(key and str(key).strip())
 
     def set_api_key(self, api_key: str):
-        """Update API key at runtime."""
+        """Update API key."""
         self._api_key = api_key.strip()
         self._client = None
 
     def _get_client(self):
-        """Return a Gemini SDK client if configured.
-        Raises GeminiError if no API key is configured.
-        """
+        """Get SDK client."""
         if not self.is_configured():
             raise GeminiError('GEMINI_API_KEY is not configured.')
-        # Placeholder: instantiate real SDK client here.
+        # SDK client placeholder
         return None
 
     def _call_openrouter(self, prompt: str, model: str, api_key: str) -> str:
-        """Make a single request to OpenRouter with a strict hard deadline. Returns text or raises."""
+        """Send prompt to AI model."""
         import concurrent.futures
 
         def _do_post():
@@ -137,7 +114,7 @@ class GeminiClient:
                 raise GeminiRateLimitError(f'Model {model} timed out after 10s (server overloaded).') from exc
 
         if resp.status_code in (429, 503, 529):
-            # 529 = OpenRouter-specific "model overloaded"
+            # Server busy
             raise GeminiRateLimitError(
                 f'Model {model} overloaded/rate-limited ({resp.status_code}): {resp.text[:150]}'
             )
@@ -148,7 +125,7 @@ class GeminiClient:
         choices = data.get('choices') or []
         if not choices:
             raise GeminiError(f'OpenRouter returned empty choices for model {model}.')
-        # Also check for error payload inside response body
+        # Check error response
         err = data.get('error')
         if err:
             code = err.get('code', 0)
@@ -159,11 +136,7 @@ class GeminiClient:
         return (choices[0].get('message') or {}).get('content') or ''
 
     def _call_with_retry(self, prompt: str) -> str:
-        """Call OpenRouter with exponential backoff and automatic model fallback.
-
-        On overload / rate-limit the primary model is skipped and 1 backup
-        model is attempted. If both fail, falls back to local synthesis.
-        """
+        """Call model with retry."""
         import os
         openrouter_key = (
             self._api_key
@@ -176,7 +149,7 @@ class GeminiClient:
         if not openrouter_key:
             raise GeminiError('No API key configured. Set GEMINI_API_KEY in your .env file.')
 
-        # Primary model first, plus at most 1 fast fallback model
+        # Models to try
         models_to_try = [self._model_name]
         for m in FALLBACK_MODELS:
             if m != self._model_name:
@@ -228,37 +201,31 @@ class GeminiClient:
                         continue
                     last_error = exc
                     log.error('Unrecoverable error on model %s: %s', model, exc, exc_info=True)
-                    break  # Try next model
+                    break  # Next model
 
         raise GeminiError(
             f'All OpenRouter models failed. Last error: {last_error}'
         ) from last_error
 
     def _parse_json_response(self, raw: str, schema: Type[T]) -> T:
-        """
-        Parse and validate a JSON response against a Pydantic schema.
-
-        Strips markdown code fences if present (models sometimes add them
-        even when instructed not to).  If direct parsing fails, falls back
-        to a regex extraction of the first JSON object in the response.
-        """
+        """Parse JSON response."""
         text = raw.strip()
 
-        # Strip markdown code fences: ```json ... ``` or ``` ... ```
+        # Remove code blocks
         if text.startswith('```'):
             lines = text.split('\n')
-            # Remove opening fence line (may be ```json, ```JSON, or just ```)
+            # Remove top line
             lines = lines[1:]
-            # Remove closing fence if present
+            # Remove bottom line
             if lines and lines[-1].strip().startswith('```'):
                 lines = lines[:-1]
             text = '\n'.join(lines).strip()
 
-        # Try direct parse first
+        # Parse JSON
         try:
             data = json.loads(text)
         except json.JSONDecodeError:
-            # Fall back: extract the first {...} JSON object from raw response
+            # Extract JSON object
             import re as _re
             match = _re.search(r'\{[\s\S]*\}', raw)
             if match:
@@ -277,7 +244,7 @@ class GeminiClient:
                     raw_response=raw,
                 )
 
-        # Sanitize data dict against common LLM omissions before validation
+        # Fill missing fields
         if isinstance(data, dict):
             valid_conf = {'high', 'medium', 'low'}
             if data.get('confidence') not in valid_conf:
@@ -311,11 +278,8 @@ class GeminiClient:
         retrieved_passages: list[dict],
         allow_fallback: bool = False,
     ) -> ResearchResultSchema:
-        """
-        Run a scheme research query using retrieved evidence as context.
-        Uses the Gemini SDK if available, otherwise falls back to OpenRouter or local synthesis.
-        """
-        # Try SDK client first (used in tests)
+        """Research a scheme."""
+        # Try SDK client
         try:
             sdk = self._get_client()
         except GeminiError:
@@ -329,12 +293,12 @@ class GeminiClient:
                 result.ai_model_used = self._model_name
                 return result
             except Exception as exc:
-                # Detect rate limit errors and raise specific exception
+                # Check rate limit
                 if any(kw in str(exc).lower() for kw in ('quota', 'rate', '429', 'resource_exhausted')):
                     raise GeminiRateLimitError(f'SDK rate limit error: {exc}')
                 raise
 
-        # SDK not available; fall back to OpenRouter or local fallback based on configuration
+        # Use fallback if needed
         if not self.is_configured():
             from .fallback import fallback_research_scheme
             log.info('GEMINI_API_KEY not set. Using local fallback synthesis for: %s', query[:50])
@@ -358,11 +322,8 @@ class GeminiClient:
         retrieved_passages: list[dict],
         allow_fallback: bool = False,
     ) -> FactCheckVerdictSchema:
-        """
-        Verify a single factual claim against retrieved evidence.
-        Uses the Gemini SDK if available, otherwise falls back to OpenRouter or local synthesis.
-        """
-        # Try SDK client first (used in tests)
+        """Verify a claim."""
+        # Try SDK client
         try:
             sdk = self._get_client()
         except GeminiError:
@@ -378,7 +339,7 @@ class GeminiClient:
                     raise GeminiRateLimitError(f'SDK rate limit error: {exc}')
                 raise
 
-        # SDK not available; fall back to OpenRouter or local fallback based on configuration
+        # Use fallback if needed
         if not self.is_configured():
             from .fallback import fallback_fact_check_claim
             log.info('GEMINI_API_KEY not set. Using local fallback fact check for claim: %s', claim[:50])
@@ -393,5 +354,5 @@ class GeminiClient:
             return fallback_fact_check_claim(claim, retrieved_passages)
 
 
-# Module-level singleton — use this instead of constructing GeminiClient directly
-gemini_client = GeminiClient()  # Alias kept for backward compatibility
+# Shared client
+gemini_client = GeminiClient()  # Shared instance

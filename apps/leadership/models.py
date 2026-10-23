@@ -1,19 +1,10 @@
-"""
-Models for the leadership app.
-
-Tracks political parties, governments, leaders, ministries,
-ministerial tenures, and scheme responsibilities.
-
-Key design principle: tenure records are IMMUTABLE HISTORY.
-When a minister changes, a new MinisterialTenure is created with
-effective dates — old records are never overwritten.
-"""
+"""Leadership models."""
 
 from django.db import models
 
 
 class PoliticalParty(models.Model):
-    """A political party or electoral alliance."""
+    """Political party."""
 
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=300, unique=True)
@@ -31,11 +22,7 @@ class PoliticalParty(models.Model):
 
 
 class Government(models.Model):
-    """
-    A government or administration (central or state) for a specific term.
-
-    e.g. "Government of India, 2019–2024" or "Maharashtra Government, 2019–2024".
-    """
+    """Government record."""
 
     LEVEL_CENTRAL = 'central'
     LEVEL_STATE = 'state'
@@ -84,11 +71,7 @@ class Government(models.Model):
 
 
 class Leader(models.Model):
-    """
-    A political or administrative leader — PM, CM, minister, or bureaucrat.
-
-    Distinct from their role; a leader may hold multiple roles over time.
-    """
+    """Political or administrative leader."""
 
     id = models.BigAutoField(primary_key=True)
     full_name = models.CharField(max_length=300)
@@ -111,7 +94,7 @@ class Leader(models.Model):
 
 
 class MinistryOrDepartment(models.Model):
-    """A ministry or department of government, with effective-date tracking."""
+    """Ministry or department."""
 
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=300)
@@ -144,12 +127,7 @@ class MinistryOrDepartment(models.Model):
 
 
 class MinisterialTenure(models.Model):
-    """
-    Tracks who held which portfolio during which period.
-
-    A new record is created for every change of minister or portfolio,
-    preserving full historical leadership for each scheme.
-    """
+    """Leader tenure record."""
 
     ROLE_PM = 'prime_minister'
     ROLE_CM = 'chief_minister'
@@ -214,12 +192,7 @@ class MinisterialTenure(models.Model):
 
 
 class SchemeResponsibility(models.Model):
-    """
-    Maps which ministry / leader was responsible for a scheme during a period.
-
-    A scheme's administrative home may change without the scheme itself changing.
-    This model captures that history explicitly.
-    """
+    """Scheme leadership assignment."""
 
     RESPONSIBILITY_LAUNCH = 'launch'
     RESPONSIBILITY_ADMINISTRATION = 'administration'

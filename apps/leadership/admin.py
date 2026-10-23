@@ -1,4 +1,4 @@
-"""Admin interface for the leadership app."""
+"""Leadership admin."""
 
 from django.contrib import admin
 

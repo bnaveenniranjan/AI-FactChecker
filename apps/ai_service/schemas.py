@@ -1,11 +1,4 @@
-"""
-Pydantic schemas for structured Gemini AI output.
-
-These schemas are the contract between Gemini's JSON output
-and our application's data layer. Gemini must receive retrieved
-evidence as context and must NOT invent sources or fill missing
-data with guesses.
-"""
+"""AI data schemas."""
 
 from __future__ import annotations
 
@@ -37,12 +30,9 @@ class ConfidenceLevel(str, Enum):
     LOW = 'low'
 
 
-# ---------------------------------------------------------------------------
-# Scheme Overview Schema
-# ---------------------------------------------------------------------------
-
+# Scheme overview
 class SchemeOverviewSchema(BaseModel):
-    """Structured output for scheme overview extracted from sources."""
+    """Scheme overview data."""
 
     name: str = Field(..., description='Official full name of the scheme')
     abbreviation: Optional[str] = Field(None, description='Common abbreviation, e.g. PM-KISAN')
@@ -66,12 +56,9 @@ class SchemeOverviewSchema(BaseModel):
     )
 
 
-# ---------------------------------------------------------------------------
-# Budget Record Schema
-# ---------------------------------------------------------------------------
-
+# Budget record
 class BudgetRecordSchema(BaseModel):
-    """Structured output for a single financial year budget entry."""
+    """Budget record data."""
 
     financial_year: str = Field(..., description='Financial year, e.g. "2023-24"')
     budget_estimate: Optional[float] = Field(None, description='Budget Estimate (BE)')
@@ -90,18 +77,15 @@ class BudgetRecordSchema(BaseModel):
     @field_validator('financial_year')
     @classmethod
     def validate_financial_year(cls, v: str) -> str:
-        """Ensure financial year is in expected format like 2023-24."""
+        """Check financial year."""
         if not v or len(v) < 4:
             raise ValueError(f'Invalid financial year format: {v!r}')
         return v
 
 
-# ---------------------------------------------------------------------------
-# Timeline Event Schema
-# ---------------------------------------------------------------------------
-
+# Timeline event
 class TimelineEventSchema(BaseModel):
-    """Structured output for a single chronological scheme event."""
+    """Timeline event data."""
 
     event_type: str = Field(
         ...,
@@ -118,12 +102,9 @@ class TimelineEventSchema(BaseModel):
     data_gaps: List[str] = Field(default_factory=list)
 
 
-# ---------------------------------------------------------------------------
-# Amendment Schema
-# ---------------------------------------------------------------------------
-
+# Amendment
 class AmendmentSchema(BaseModel):
-    """Structured output for a scheme amendment."""
+    """Amendment data."""
 
     title: str
     effective_date: Optional[str] = None
@@ -145,12 +126,9 @@ class AmendmentSchema(BaseModel):
     source_urls: List[str] = Field(default_factory=list)
 
 
-# ---------------------------------------------------------------------------
-# Leadership Record Schema
-# ---------------------------------------------------------------------------
-
+# Leadership record
 class LeadershipRecordSchema(BaseModel):
-    """Historical leadership record for a scheme during a specific period."""
+    """Leadership record data."""
 
     leader_name: Optional[str] = None
     role: Optional[str] = None
@@ -169,12 +147,9 @@ class LeadershipRecordSchema(BaseModel):
     data_gaps: List[str] = Field(default_factory=list)
 
 
-# ---------------------------------------------------------------------------
-# Fact Check Verdict Schema
-# ---------------------------------------------------------------------------
-
+# Fact check verdict
 class EvidenceItemSchema(BaseModel):
-    """A single piece of evidence for or against a claim."""
+    """Evidence item."""
 
     text: str = Field(..., description='Exact excerpt from the source')
     source_url: str
@@ -189,7 +164,7 @@ class EvidenceItemSchema(BaseModel):
 
 
 class FactCheckVerdictSchema(BaseModel):
-    """Complete fact-check verdict for a single claim."""
+    """Fact check result."""
 
     original_claim: str
     verdict: ClaimVerdict
@@ -208,12 +183,9 @@ class FactCheckVerdictSchema(BaseModel):
     )
 
 
-# ---------------------------------------------------------------------------
-# Research Result Schema — top-level container
-# ---------------------------------------------------------------------------
-
+# Research result
 class ResearchResultSchema(BaseModel):
-    """Full structured research result for a scheme query."""
+    """Research result data."""
 
     query: str
     scheme_name: Optional[str] = None

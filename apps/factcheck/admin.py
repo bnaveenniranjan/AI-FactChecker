@@ -1,4 +1,4 @@
-"""Admin interface for the factcheck app."""
+"""Fact check admin."""
 
 from django.contrib import admin
 

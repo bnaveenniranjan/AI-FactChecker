@@ -1,9 +1,4 @@
-"""
-DRF serializers for all API responses.
-
-Serializers are kept separate from models to avoid coupling
-the API contract to the internal data model.
-"""
+"""API serializers."""
 
 from rest_framework import serializers
 
@@ -19,10 +14,7 @@ from apps.factcheck.models import Claim, ClaimEvidence, FactCheckResult
 from apps.search.models import ResearchJob
 
 
-# ---------------------------------------------------------------------------
 # Sources
-# ---------------------------------------------------------------------------
-
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
@@ -40,10 +32,7 @@ class EvidenceExcerptSerializer(serializers.ModelSerializer):
         fields = ['id', 'source', 'text', 'page_or_section', 'created_at']
 
 
-# ---------------------------------------------------------------------------
 # Schemes
-# ---------------------------------------------------------------------------
-
 class SchemeAliasSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchemeAlias
@@ -66,7 +55,7 @@ class EligibilityRuleSerializer(serializers.ModelSerializer):
 
 
 class SchemeListSerializer(serializers.ModelSerializer):
-    """Lightweight serializer for list views."""
+    """List serializer."""
 
     class Meta:
         model = Scheme
@@ -78,7 +67,7 @@ class SchemeListSerializer(serializers.ModelSerializer):
 
 
 class SchemeDetailSerializer(serializers.ModelSerializer):
-    """Full serializer for scheme detail view."""
+    """Detail serializer."""
 
     aliases = SchemeAliasSerializer(many=True, read_only=True)
     benefits = SchemeBenefitSerializer(many=True, read_only=True)
@@ -97,9 +86,7 @@ class SchemeDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-# ---------------------------------------------------------------------------
 # Leadership
-# ---------------------------------------------------------------------------
 
 class PoliticalPartySerializer(serializers.ModelSerializer):
     class Meta:
@@ -157,10 +144,7 @@ class SchemeResponsibilitySerializer(serializers.ModelSerializer):
         ]
 
 
-# ---------------------------------------------------------------------------
 # Budgets
-# ---------------------------------------------------------------------------
-
 class BudgetRecordSerializer(serializers.ModelSerializer):
     financial_year = serializers.SerializerMethodField()
     source = SourceSerializer(read_only=True)
@@ -180,10 +164,7 @@ class BudgetRecordSerializer(serializers.ModelSerializer):
         return obj.financial_year_display
 
 
-# ---------------------------------------------------------------------------
 # Timeline
-# ---------------------------------------------------------------------------
-
 class TimelineEventSerializer(serializers.ModelSerializer):
     sources = SourceSerializer(many=True, read_only=True)
     government = GovernmentSerializer(read_only=True)
@@ -222,10 +203,7 @@ class SchemeAmendmentSerializer(serializers.ModelSerializer):
         ]
 
 
-# ---------------------------------------------------------------------------
-# Fact-checking
-# ---------------------------------------------------------------------------
-
+# Fact check
 class ClaimEvidenceSerializer(serializers.ModelSerializer):
     excerpt = EvidenceExcerptSerializer(read_only=True)
     source = SourceSerializer(read_only=True)
@@ -262,10 +240,7 @@ class FactCheckResultSerializer(serializers.ModelSerializer):
         ]
 
 
-# ---------------------------------------------------------------------------
 # Research
-# ---------------------------------------------------------------------------
-
 class ResearchJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResearchJob
@@ -283,7 +258,7 @@ class ResearchJobSerializer(serializers.ModelSerializer):
 
 
 class ResearchRequestSerializer(serializers.Serializer):
-    """Input serializer for POST /api/v1/research/"""
+    """Research request input."""
     query = serializers.CharField(
         max_length=500,
         help_text='Search query for the government scheme',
@@ -297,7 +272,7 @@ class ResearchRequestSerializer(serializers.Serializer):
 
 
 class FactCheckRequestSerializer(serializers.Serializer):
-    """Input serializer for POST /api/v1/fact-check/"""
+    """Fact check request input."""
     claim = serializers.CharField(
         max_length=1000,
         help_text='The factual claim to verify',
