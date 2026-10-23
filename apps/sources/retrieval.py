@@ -65,7 +65,7 @@ ALLOWED_DOMAINS = {
     'eci.gov.in',
 }
 
-FETCH_TIMEOUT_S = 15
+FETCH_TIMEOUT_S = 3
 MAX_CONTENT_BYTES = 200_000  # 200 KB per source
 
 

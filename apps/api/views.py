@@ -61,7 +61,10 @@ class ResearchView(APIView):
         except Exception as exc:
             # Fallback: manually load raw body, stripping possible UTF-8 BOM
             try:
-                raw = request.body.decode('utf-8-sig')
+                raw = request.body.decode('utf-8-sig').strip()
+                # Remove surrounding quotes if the payload is sent as a quoted string
+                if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
+                    raw = raw[1:-1]
                 data = json.loads(raw)
             except Exception as exc2:
                 log.error('JSON parse error in research request: %s / %s', exc, exc2)

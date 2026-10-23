@@ -184,13 +184,19 @@ class ResearchOrchestrator:
         candidate_urls = _get_candidate_urls(scheme_name, query)
         log.info('Discovered %d candidate URLs for query: %s', len(candidate_urls), query[:60])
 
-        # Step 3: Fetch sources — higher limit gives Gemini more timeline context
+        # Step 3: Fetch sources concurrently
         passages = []
-        for url in candidate_urls[:12]:  # Increased from 8 to 12 for fuller timeline coverage
-            content = fetch_url_content(url)
-            if content and content.get('text'):
-                passages.append(content)
-                log.debug('Fetched source: %s', url)
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_url = {executor.submit(fetch_url_content, url): url for url in candidate_urls[:6]}
+            for future in concurrent.futures.as_completed(future_to_url, timeout=5):
+                try:
+                    content = future.result()
+                    if content and content.get('text'):
+                        passages.append(content)
+                        log.debug('Fetched source: %s', future_to_url[future])
+                except Exception as exc:
+                    log.debug('Failed to fetch %s: %s', future_to_url[future], exc)
 
         if job:
             job.sources_found = len(candidate_urls)

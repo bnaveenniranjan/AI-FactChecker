@@ -145,15 +145,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const leadershipRecords = result.leadership_records || [];
     const sources = result.source_urls_searched || [];
 
-    // Scheme Title & Meta
-    document.getElementById('resSchemeName').textContent = overview.name || result.scheme_name || 'Government Scheme';
-    document.getElementById('resSchemeAbbr').textContent = overview.abbreviation ? `(${overview.abbreviation})` : '';
-    document.getElementById('resSchemeCategory').textContent = overview.category || 'Central Welfare Scheme';
-    document.getElementById('resSchemeStatus').textContent = overview.operational_status || 'Active';
-    document.getElementById('resSchemeDesc').textContent = overview.original_objectives || 'Comprehensive government welfare and social assistance policy.';
-    document.getElementById('resLaunchDate').textContent = overview.launch_date || 'Documented Launch Date';
-    document.getElementById('resBeneficiaries').textContent = overview.intended_beneficiaries || 'Target population and citizen beneficiaries';
-    document.getElementById('resJurisdiction').textContent = overview.jurisdiction ? overview.jurisdiction.toUpperCase() : 'CENTRAL';
+    // Scheme Title & Meta (safe assignments)
+    const schemeNameEl = document.getElementById('resSchemeName');
+    if (schemeNameEl) schemeNameEl.textContent = overview.name || result.scheme_name || 'Government Scheme';
+    const schemeAbbrEl = document.getElementById('resSchemeAbbr');
+    if (schemeAbbrEl) schemeAbbrEl.textContent = overview.abbreviation ? `(${overview.abbreviation})` : '';
+    const schemeCategoryEl = document.getElementById('resSchemeCategory');
+    if (schemeCategoryEl) schemeCategoryEl.textContent = overview.category || 'Central Welfare Scheme';
+    const schemeStatusEl = document.getElementById('resSchemeStatus');
+    if (schemeStatusEl) schemeStatusEl.textContent = overview.operational_status || 'Active';
+    const schemeDescEl = document.getElementById('resSchemeDesc');
+    if (schemeDescEl) schemeDescEl.textContent = overview.original_objectives || 'Comprehensive government welfare and social assistance policy.';
+    const launchDateEl = document.getElementById('resLaunchDate');
+    if (launchDateEl) launchDateEl.textContent = overview.launch_date || 'Documented Launch Date';
+    const beneficiariesEl = document.getElementById('resBeneficiaries');
+    if (beneficiariesEl) beneficiariesEl.textContent = overview.intended_beneficiaries || 'Target population and citizen beneficiaries';
+    const jurisdictionEl = document.getElementById('resJurisdiction');
+    if (jurisdictionEl) jurisdictionEl.textContent = overview.jurisdiction ? overview.jurisdiction.toUpperCase() : 'CENTRAL';
 
     const portalBtn = document.getElementById('resPortalBtn');
     if (portalBtn) {
@@ -906,6 +914,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const budgets = await budgetRes.json();
       const leadership = await leadershipRes.json();
 
+      // Safely extract array items regardless of pagination wrapper
+      const timelineList = Array.isArray(timeline && timeline.results) ? timeline.results : (Array.isArray(timeline) ? timeline : []);
+      const budgetList = Array.isArray(budgets && budgets.results) ? budgets.results : (Array.isArray(budgets) ? budgets : []);
+      const leadershipList = Array.isArray(leadership && leadership.results) ? leadership.results : (Array.isArray(leadership) ? leadership : []);
+
       const combinedData = {
         scheme_name: scheme.name,
         overview: {
@@ -920,7 +933,7 @@ document.addEventListener('DOMContentLoaded', () => {
           jurisdiction: scheme.jurisdiction,
         },
         // Get ALL timeline events — the API returns them all; we map every one
-        timeline_events: (timeline.results || (Array.isArray(timeline) ? timeline : [])).map(t => ({
+        timeline_events: timelineList.map(t => ({
           title: t.title,
           description: t.description,
           event_date: t.event_date,
@@ -929,7 +942,7 @@ document.addEventListener('DOMContentLoaded', () => {
           responsible_leader: t.responsible_leader ? (typeof t.responsible_leader === 'string' ? t.responsible_leader : t.responsible_leader.full_name) : '',
           source_urls: t.source_urls || [],
         })),
-        budget_records: (budgets.results || budgets).map(b => ({
+        budget_records: budgetList.map(b => ({
           financial_year: b.financial_year || (b.financial_year_start ? `${b.financial_year_start}-${String(b.financial_year_end).slice(-2)}` : 'FY'),
           financial_year_start: b.financial_year_start,
           financial_year_end: b.financial_year_end,
@@ -938,7 +951,7 @@ document.addEventListener('DOMContentLoaded', () => {
           actual_expenditure: b.actual_expenditure,
           verification_status: b.verification_status,
         })),
-        leadership_records: (leadership.results || leadership).map(l => ({
+        leadership_records: leadershipList.map(l => ({
           leader_name: l.leader_name || (l.ministerial_tenure && l.ministerial_tenure.leader ? l.ministerial_tenure.leader.full_name : ''),
           role: l.role || l.portfolio || l.responsibility_type || (l.ministerial_tenure ? l.ministerial_tenure.role : 'Minister In-Charge'),
           ministry: l.ministry ? (typeof l.ministry === 'string' ? l.ministry : l.ministry.name) : '',

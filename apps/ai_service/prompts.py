@@ -193,12 +193,13 @@ def _format_passages(passages: List[dict]) -> str:
         return 'No evidence was retrieved. All fields should be null and data_gaps should reflect this.'
 
     lines = []
-    for i, p in enumerate(passages, 1):
+    for i, p in enumerate(passages[:4], 1):
         lines.append(f'--- SOURCE {i} ---')
         lines.append(f'URL: {p.get("url", "unknown")}')
         lines.append(f'Title: {p.get("title", "unknown")}')
         lines.append(f'Publisher: {p.get("publisher", "unknown")}')
         lines.append(f'Published: {p.get("published_date", "unknown")}')
-        lines.append(f'Content:\n{p.get("text", "")}')
+        content_snippet = (p.get("text") or "").strip()[:2500]
+        lines.append(f'Content:\n{content_snippet}')
         lines.append('')
     return '\n'.join(lines)

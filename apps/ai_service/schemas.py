@@ -129,7 +129,7 @@ class AmendmentSchema(BaseModel):
     effective_date: Optional[str] = None
     announced_date: Optional[str] = None
     previous_provision: Optional[str] = None
-    new_provision: str
+    new_provision: Optional[str] = None
     official_reason: Optional[str] = Field(
         None,
         description='Officially stated reason from government records only',
